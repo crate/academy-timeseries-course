@@ -1,3 +1,14 @@
+# Node.js
+node_modules/
+
+# Apple
+.DS_Store
+
+# Temp files
+*.bak
+*.swp
+*.tmp
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
