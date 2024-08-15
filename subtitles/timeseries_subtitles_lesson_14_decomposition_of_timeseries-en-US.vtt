@@ -1,0 +1,441 @@
+﻿WEBVTT
+
+00:00:00.240 --> 00:00:03.319
+Time series decomposition is
+crucial in understanding the
+
+00:00:03.319 --> 00:00:06.240
+underlying patterns and
+behaviors of time series data.
+
+00:00:06.760 --> 00:00:10.546
+It also significantly improves
+the accuracy and effectiveness
+
+00:00:10.546 --> 00:00:14.333
+of our forecasting models by
+isolating and analyzing the main
+
+00:00:14.333 --> 00:00:16.959
+components, trend, seasonality,
+and noise.
+
+00:00:18.200 --> 00:00:21.876
+In this video, we will leverage
+the power of PyCaret, and CrateDB
+
+00:00:21.876 --> 00:00:24.365
+for time series
+decomposition, unlocking
+
+00:00:24.365 --> 00:00:27.080
+valuable insights for
+forecasting and analysis.
+
+00:00:29.400 --> 00:00:33.251
+Time series decomposition is a
+technique that involves breaking
+
+00:00:33.251 --> 00:00:36.320
+down a time series into its
+three core components.
+
+00:00:36.960 --> 00:00:39.872
+This method is essential for
+understanding the different
+
+00:00:39.872 --> 00:00:42.784
+factors that influence the
+behavior of the data set over
+
+00:00:42.784 --> 00:00:43.040
+time.
+
+00:00:43.760 --> 00:00:46.842
+First, we have the trend
+component, which shows us the
+
+00:00:46.842 --> 00:00:50.317
+long term direction or movement
+in the data, representing the
+
+00:00:50.317 --> 00:00:52.559
+gradual increase or decrease
+over time.
+
+00:00:53.280 --> 00:00:56.947
+Then we have seasonality, which
+refers to patterns that repeat
+
+00:00:56.947 --> 00:00:59.160
+at regular intervals within the
+data.
+
+00:00:59.920 --> 00:01:03.551
+These could be influenced by
+various seasonal factors such as
+
+00:01:03.551 --> 00:01:06.831
+holidays, weather patterns, or
+business cycles, and are
+
+00:01:06.831 --> 00:01:09.760
+critical for understanding
+periodic fluctuations.
+
+00:01:10.480 --> 00:01:14.626
+Finally, residuals represent the
+random variations, also known as
+
+00:01:14.626 --> 00:01:18.332
+noise, that remain after the
+trend and seasonal components
+
+00:01:18.332 --> 00:01:19.840
+have been accounted for.
+
+00:01:20.640 --> 00:01:23.768
+These are the unpredictable
+parts of the series that often
+
+00:01:23.768 --> 00:01:26.791
+hold unique insights into
+unforeseen events or anomalies
+
+00:01:26.791 --> 00:01:27.640
+within the data.
+
+00:01:28.920 --> 00:01:32.095
+By separating a time series into
+these components, we gain a
+
+00:01:32.095 --> 00:01:35.114
+clearer understanding of the
+underlying structure and are
+
+00:01:35.114 --> 00:01:37.769
+better positioned to make
+accurate predictions and
+
+00:01:37.769 --> 00:01:39.799
+strategic decisions based on the
+data.
+
+00:01:42.560 --> 00:01:46.369
+This notebook demonstrates how
+to use SQLAlchemy to load time
+
+00:01:46.369 --> 00:01:49.694
+series data from CrateDB,
+preprocess it and plot time
+
+00:01:49.694 --> 00:01:53.322
+series decomposition with PyCaret,
+an efficient low code
+
+00:01:53.322 --> 00:01:56.949
+machine learning library in
+Python that has been introduced
+
+00:01:56.949 --> 00:01:58.279
+in a previous session.
+
+00:01:59.680 --> 00:02:03.040
+All necessary dependencies to
+run this notebook are located in
+
+00:02:03.040 --> 00:02:06.453
+the requirements text file and
+they can be installed by running
+
+00:02:06.453 --> 00:02:07.520
+pip install command.
+
+00:02:08.400 --> 00:02:11.914
+If you are running this notebook
+in an environment like Google
+
+00:02:11.914 --> 00:02:14.760
+Collab, use the absolute path as
+illustrated here.
+
+00:02:17.160 --> 00:02:20.772
+As a first step, we are looking
+into connecting to a CrateDB
+
+00:02:20.772 --> 00:02:22.520
+instance using SQLAlchemy.
+
+00:02:23.880 --> 00:02:26.998
+Firstly, we establish a
+connection string and we can
+
+00:02:26.998 --> 00:02:30.587
+consider two scenarios, one for
+connecting to a local CrateDB
+
+00:02:30.587 --> 00:02:33.941
+instance which is often used for
+development and testing
+
+00:02:33.941 --> 00:02:37.295
+purposes, and another for
+connecting to a CrateDB cloud
+
+00:02:37.295 --> 00:02:40.354
+instance which is typically
+utilized for production
+
+00:02:40.354 --> 00:02:42.120
+databases hosted in the cloud.
+
+00:02:43.520 --> 00:02:47.116
+Once the connection string is
+defined, we create an engine
+
+00:02:47.116 --> 00:02:48.640
+object in SQLAlchemy.
+
+00:02:49.440 --> 00:02:52.545
+It's a common interface to the
+database that we are querying
+
+00:02:52.545 --> 00:02:52.800
+from.
+
+00:02:53.720 --> 00:02:57.088
+The following code demonstrates
+fetching data from the CrateDB
+
+00:02:57.088 --> 00:02:59.720
+instance and loading it into a
+pandas data frame.
+
+00:03:00.560 --> 00:03:04.608
+We execute a simple SQL query to
+select all records from weather
+
+00:03:04.608 --> 00:03:04.920
+data.
+
+00:03:05.800 --> 00:03:10.403
+After successfully fetching the
+data, we preview the first 5 rows
+
+00:03:10.403 --> 00:03:14.000
+of our data frame as illustrated
+in the notebook.
+
+00:03:14.240 --> 00:03:18.222
+The next few steps preprocess
+data for an analysis by setting
+
+00:03:18.222 --> 00:03:22.076
+the index column, interpolating
+missing data, and computing
+
+00:03:22.076 --> 00:03:23.040
+daily averages.
+
+00:03:23.880 --> 00:03:27.775
+We refer to our previous video
+on exploratory data analysis for
+
+00:03:27.775 --> 00:03:29.480
+more details on these steps.
+
+00:03:30.360 --> 00:03:33.982
+Similarly, we also set up the
+forecasting experiment for time
+
+00:03:33.982 --> 00:03:37.078
+series data by passing the
+temperature as the target
+
+00:03:37.078 --> 00:03:39.240
+variable and three seasonal
+periods.
+
+00:03:40.120 --> 00:03:43.788
+As the model suggests, we can
+observe that there are possible
+
+00:03:43.788 --> 00:03:45.800
+seasonality for five and 20
+days.
+
+00:03:46.680 --> 00:03:49.880
+The primary seasonality is
+detected for five days.
+
+00:03:51.680 --> 00:03:55.463
+Now let's visualize the time
+series decomposition with
+
+00:03:55.463 --> 00:03:55.920
+PyCaret.
+
+00:03:56.800 --> 00:03:59.967
+PyCaret automates much of the
+analytical process, and it
+
+00:03:59.967 --> 00:04:02.760
+already detected the recurring
+pattern in our data.
+
+00:04:03.640 --> 00:04:07.222
+To further explore this, we can
+employ the plot model function
+
+00:04:07.222 --> 00:04:09.440
+with the plot="decomp"
+parameter.
+
+00:04:10.240 --> 00:04:13.885
+This powerful visualization
+command instructs PyCaret to
+
+00:04:13.885 --> 00:04:17.655
+generate decomposition graphs,
+which will display the trend,
+
+00:04:17.655 --> 00:04:20.559
+seasonality, and residuals of
+our time series.
+
+00:04:20.880 --> 00:04:25.414
+As illustrated in the first
+graph, we can also pass specific
+
+00:04:25.414 --> 00:04:28.240
+parameters to change the
+seasonality.
+
+00:04:29.120 --> 00:04:32.555
+For instance, we can use the
+same method with a seasonal
+
+00:04:32.555 --> 00:04:33.640
+period of 20 days.
+
+00:04:34.480 --> 00:04:36.760
+The second graph illustrates the
+result.
+
+00:04:37.600 --> 00:04:41.040
+Besides classical additive
+decomposition, we can use more
+
+00:04:41.040 --> 00:04:42.880
+advanced decomposition methods.
+
+00:04:43.720 --> 00:04:47.442
+The STL decomposition allows us
+to estimate both the trend and
+
+00:04:47.442 --> 00:04:50.160
+seasonal components with greater
+flexibility.
+
+00:04:51.040 --> 00:04:54.431
+One of the key advantages of STL
+is its ability to let the
+
+00:04:54.431 --> 00:04:58.168
+seasonal component evolve, which
+is particularly useful for data
+
+00:04:58.168 --> 00:05:01.560
+sets where seasonality may vary
+from one cycle to another.
+
+00:05:02.400 --> 00:05:05.475
+The third graph in the notebook
+visualizes the STL
+
+00:05:05.475 --> 00:05:06.320
+decomposition.
+
+00:05:07.680 --> 00:05:10.720
+Based on the results, we can
+make a couple of observations.
+
+00:05:11.040 --> 00:05:13.930
+There is an upward trend of
+temperature in spring and summer
+
+00:05:13.930 --> 00:05:15.400
+and a downward trend in autumn.
+
+00:05:16.280 --> 00:05:18.920
+Seasonality is also present in
+the series.
+
+00:05:19.840 --> 00:05:23.011
+The residuals in classical
+decompositions are also
+
+00:05:23.011 --> 00:05:26.120
+interesting, showing periods of
+high variability.
+
+00:05:27.600 --> 00:05:31.026
+Moving forward, let's take a
+closer look at how PyCaret
+
+00:05:31.026 --> 00:05:34.452
+enables us to understand the
+statistical properties of our
+
+00:05:34.452 --> 00:05:35.440
+time series data.
+
+00:05:36.280 --> 00:05:39.543
+PyCaret's Check Stats
+function is a comprehensive tool
+
+00:05:39.543 --> 00:05:42.919
+that provides a snapshot of
+statistics and performs a suite
+
+00:05:42.919 --> 00:05:46.520
+of statistical tests on our data
+or the residuals of our model.
+
+00:05:47.880 --> 00:05:51.770
+For instance, the summary test
+gives us descriptive statistics
+
+00:05:51.770 --> 00:05:55.475
+offering insights into the
+central tendency, dispersion and
+
+00:05:55.475 --> 00:05:57.760
+shape of the data sets
+distribution.
+
+00:05:58.640 --> 00:06:02.364
+As you can see, other tests give
+us deeper insights into our time
+
+00:06:02.364 --> 00:06:02.760
+series.
+
+00:06:05.200 --> 00:06:08.394
+With this overview of time
+series decomposition with PyCaret,
+
+00:06:08.394 --> 00:06:11.810
+and CrateDB, you should
+have a solid understanding of
+
+00:06:11.810 --> 00:06:14.784
+the data's statistical
+properties, which is essential
+
+00:06:14.784 --> 00:06:17.538
+for reliable and insightful
+anomaly detection and
+
+00:06:17.538 --> 00:06:18.200
+forecasting.

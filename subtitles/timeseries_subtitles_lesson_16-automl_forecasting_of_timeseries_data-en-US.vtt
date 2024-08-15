@@ -1,0 +1,443 @@
+﻿WEBVTT
+
+00:00:00.040 --> 00:00:03.881
+Time series forecasting stands
+at the heart of decision making
+
+00:00:03.881 --> 00:00:07.540
+in many industries, whether it
+is forecasting sales, supply
+
+00:00:07.540 --> 00:00:11.443
+chain analysis, predicting stock
+market trends, or anticipating
+
+00:00:11.443 --> 00:00:12.480
+weather patterns.
+
+00:00:13.840 --> 00:00:17.933
+In today's video, we will show a
+practical example how to use an
+
+00:00:17.933 --> 00:00:21.964
+AutoML approach, leveraging the
+power of CrateDB, PyCaret,
+
+00:00:21.964 --> 00:00:25.680
+and MLFLow to transform data
+into insightful predictions.
+
+00:00:26.760 --> 00:00:30.186
+Choosing PyCaret, CrateDB,
+and MLFLow for creating a time
+
+00:00:30.186 --> 00:00:33.502
+series forecasting model is
+driven by their unique features
+
+00:00:33.502 --> 00:00:36.873
+and strengths, especially when
+dealing with large data sets,
+
+00:00:36.873 --> 00:00:39.360
+and aiming for efficient
+development cycles.
+
+00:00:40.440 --> 00:00:44.325
+PyCaret stands out for its
+AutoML capabilities, automating
+
+00:00:44.325 --> 00:00:47.961
+the tedious process of model
+selection and hyperparameter
+
+00:00:47.961 --> 00:00:48.400
+tuning.
+
+00:00:49.160 --> 00:00:52.460
+With just a few lines of code,
+we can compare, evaluate and
+
+00:00:52.460 --> 00:00:55.320
+refine dozens of models to find
+the best performer.
+
+00:00:56.560 --> 00:00:59.865
+MLFLow helps to operationalize
+your machine learning
+
+00:00:59.865 --> 00:01:00.600
+initiatives.
+
+00:01:01.000 --> 00:01:04.552
+It tracks models, parameters,
+and outcomes, and enables to
+
+00:01:04.552 --> 00:01:08.406
+iterate rapidly and efficiently
+towards the optimal forecasting
+
+00:01:08.406 --> 00:01:12.080
+solution while also monitoring
+your model in production use.
+
+00:01:13.320 --> 00:01:16.480
+Before we start, we need to
+ensure our toolbox is ready.
+
+00:01:17.000 --> 00:01:20.080
+This involves installing all
+necessary Python libraries.
+
+00:01:20.640 --> 00:01:24.162
+If you're using an environment
+like Google Collab, make sure to
+
+00:01:24.162 --> 00:01:27.080
+use the absolute URL for the
+requirements text file.
+
+00:01:28.320 --> 00:01:30.840
+Next, we need a running CrateDB
+instance.
+
+00:01:31.240 --> 00:01:34.294
+The quickest way to get started
+is with the CrateDB Cloud
+
+00:01:34.294 --> 00:01:34.760
+offering.
+
+00:01:35.160 --> 00:01:38.389
+It's free to sign up and you can
+deploy a cluster with a few
+
+00:01:38.389 --> 00:01:38.760
+clicks.
+
+00:01:40.040 --> 00:01:43.224
+Please choose the correct
+connection string depending on
+
+00:01:43.224 --> 00:01:46.297
+whether you're connecting to
+CrateDB Cloud or a local
+
+00:01:46.297 --> 00:01:46.800
+instance.
+
+00:01:47.560 --> 00:01:50.423
+If you are running CrateDB
+Cloud, you will need to specify
+
+00:01:50.423 --> 00:01:53.000
+the username, password and host
+name of your cluster.
+
+00:01:54.200 --> 00:01:57.541
+With our database connectivity
+set up, we'll import the
+
+00:01:57.541 --> 00:02:00.941
+necessary Python modules and
+pull and merge the two data
+
+00:02:00.941 --> 00:02:01.240
+sets.
+
+00:02:01.640 --> 00:02:05.169
+We also introduce a new column,
+total_sales, calculated by
+
+00:02:05.169 --> 00:02:08.640
+multiplying the number of items
+sold by their unit price.
+
+00:02:09.120 --> 00:02:12.521
+The prepared data set is then
+imported into a new table in
+
+00:02:12.521 --> 00:02:13.040
+CrateDB.
+
+00:02:13.640 --> 00:02:16.625
+This makes our data accessible
+and ready for the analysis we
+
+00:02:16.625 --> 00:02:17.360
+aim to perform.
+
+00:02:18.320 --> 00:02:22.071
+Having set our data foundation,
+we shift gears towards model
+
+00:02:22.071 --> 00:02:25.885
+creation and ensure that our
+machine learning experiments are
+
+00:02:25.885 --> 00:02:29.760
+trackable by configuring MLFlow
+to use our CrateDB instance.
+
+00:02:30.480 --> 00:02:33.527
+This integration is crucial for
+maintaining a clear record of
+
+00:02:33.527 --> 00:02:34.560
+our modeling journey.
+
+00:02:35.320 --> 00:02:38.160
+As a first step, we want to
+understand our data.
+
+00:02:38.680 --> 00:02:42.715
+By plotting our total sales over
+time alongside a trend line, we
+
+00:02:42.715 --> 00:02:45.634
+gain insights into the
+underlying patterns and
+
+00:02:45.634 --> 00:02:47.000
+fluctuations in sales.
+
+00:02:47.520 --> 00:02:50.144
+The plot reveals some
+interesting insights about the
+
+00:02:50.144 --> 00:02:51.680
+sales operation of the company.
+
+00:02:52.240 --> 00:02:55.196
+The blue line represents the
+total sales and it shows
+
+00:02:55.196 --> 00:02:57.880
+considerable fluctuations
+throughout the period.
+
+00:02:58.600 --> 00:03:01.936
+There are notable peaks and
+troughs suggesting periods of
+
+00:03:01.936 --> 00:03:04.640
+high sales followed by periods
+of lower sales.
+
+00:03:05.280 --> 00:03:08.291
+The orange trend line provides
+an overview of the general sales
+
+00:03:08.291 --> 00:03:09.280
+trend over the years.
+
+00:03:10.040 --> 00:03:13.763
+It appears that there's a
+gradual upward trend in sales
+
+00:03:13.763 --> 00:03:14.960
+from 2014 to 2021.
+
+00:03:15.480 --> 00:03:18.945
+This indicates that despite the
+periodic fluctuations, the
+
+00:03:18.945 --> 00:03:22.000
+overall sales have been on the
+rise over the years.
+
+00:03:23.000 --> 00:03:26.883
+To understand the key components
+of our time series data, we
+
+00:03:26.883 --> 00:03:30.640
+outlined here more detailed
+observations using PyCaret.
+
+00:03:30.960 --> 00:03:33.800
+We train a model to predict
+future sales from past data.
+
+00:03:34.560 --> 00:03:38.269
+First, we tell PyCaret what
+we want to predict the total
+
+00:03:38.269 --> 00:03:38.640
+sales.
+
+00:03:39.040 --> 00:03:41.640
+We use the month to organize our
+data over time.
+
+00:03:42.280 --> 00:03:45.648
+We also decide to keep track of
+our work with MLFlow and plan
+
+00:03:45.648 --> 00:03:47.840
+to predict sales for the next 12
+months.
+
+00:03:51.720 --> 00:03:55.200
+Next PyCaret compares 28
+models to find which one
+
+00:03:55.200 --> 00:03:56.120
+predicts best.
+
+00:03:56.720 --> 00:04:00.084
+It turns out that the Extra
+Trees model, which adjusts for
+
+00:04:00.084 --> 00:04:03.106
+seasonal changes is the top
+choice based on the Mean
+
+00:04:03.106 --> 00:04:04.760
+Absolute Scaled Error metric.
+
+00:04:05.520 --> 00:04:08.792
+However, your exact numbers
+might vary a bit in each run
+
+00:04:08.792 --> 00:04:11.891
+because PyCaret uses
+different data splits to test
+
+00:04:11.891 --> 00:04:13.040
+the models accuracy.
+
+00:04:13.840 --> 00:04:19.145
+This method, called cross
+validation, helps make sure our
+
+00:04:19.145 --> 00:04:24.633
+model is reliable and doesn't
+just memorize the data before
+
+00:04:24.633 --> 00:04:25.640
+continuing.
+
+00:04:25.840 --> 00:04:28.440
+It's best to have a look at the
+performance of the models.
+
+00:04:29.160 --> 00:04:32.316
+The above plots show that all
+three of the selected models
+
+00:04:32.316 --> 00:04:35.580
+seem to predict quite well, with
+the first one at least at a
+
+00:04:35.580 --> 00:04:37.400
+glance, performing probably
+best.
+
+00:04:39.280 --> 00:04:43.339
+Now we optimize these top models
+via hyperparameter tuning, which
+
+00:04:43.339 --> 00:04:45.800
+is just one line of code in
+PyCaret.
+
+00:04:47.600 --> 00:04:51.075
+The hyperparameter tuning tries
+to improve the performance of
+
+00:04:51.075 --> 00:04:54.438
+the models and needs to be
+carefully reviewed also to avoid
+
+00:04:54.438 --> 00:04:55.839
+overfitting of the model.
+
+00:04:58.360 --> 00:05:01.572
+Now let's move to a powerful
+technique in modern machine
+
+00:05:01.572 --> 00:05:05.235
+learning, model blending, which
+combines the results of multiple
+
+00:05:05.235 --> 00:05:08.785
+models for the final prediction
+to outperform the capabilities
+
+00:05:08.785 --> 00:05:09.799
+of a single model.
+
+00:05:10.560 --> 00:05:13.780
+As you can observe, we've
+trained 28 models, tuned and
+
+00:05:13.780 --> 00:05:17.000
+blended the top performing three
+models in PyCaret.
+
+00:05:17.160 --> 00:05:20.121
+It's all done with just a few
+lines of code which would have
+
+00:05:20.121 --> 00:05:22.160
+taken hours or days in a manual
+approach.
+
+00:05:22.600 --> 00:05:26.330
+This makes AutoML not only
+powerful, but also easy to apply
+
+00:05:26.330 --> 00:05:27.920
+to many forecasting tasks.
+
+00:05:31.160 --> 00:05:34.739
+In the final step, we train our
+created model on the entire data
+
+00:05:34.739 --> 00:05:34.960
+set.
+
+00:05:35.720 --> 00:05:38.720
+Until now, we've kept some data
+aside for testing.
+
+00:05:39.120 --> 00:05:42.932
+After that, it can be used to
+make predictions on new, unseen
+
+00:05:42.932 --> 00:05:43.240
+data.
+
+00:05:43.840 --> 00:05:46.928
+The predict model method gives
+us predictions for our data,
+
+00:05:46.928 --> 00:05:50.119
+helping us to see how our model
+thinks sales will look in the
+
+00:05:50.119 --> 00:05:50.480
+future.
+
+00:05:52.200 --> 00:05:56.098
+In this video, we turn data into
+predictions, showing how easy
+
+00:05:56.098 --> 00:05:58.760
+and powerful an AutoML
+approach can be.
+
+00:05:59.400 --> 00:06:02.969
+With just a few steps, anyone
+can turn historical data into
+
+00:06:02.969 --> 00:06:06.361
+future insights, making time
+series forecasting easy and
+
+00:06:06.361 --> 00:06:09.871
+available to many users even
+without deep machine learning
+
+00:06:09.871 --> 00:06:11.240
+and programming skills.

@@ -1,0 +1,841 @@
+﻿WEBVTT
+
+00:00:00.480 --> 00:00:04.632
+We will now demonstrate how
+CrateDB is far more than a pure
+
+00:00:04.632 --> 00:00:08.648
+time series database supporting
+time series but also JSON,
+
+00:00:08.648 --> 00:00:11.440
+Geospatial, Vectors and Full-Text
+Search.
+
+00:00:12.320 --> 00:00:15.506
+There will be a demonstration of
+standard SQL and how the
+
+00:00:15.506 --> 00:00:17.440
+different data types can be
+queried.
+
+00:00:18.320 --> 00:00:22.236
+Examples mainly based on a
+weather data support this claim
+
+00:00:22.236 --> 00:00:25.954
+like full-text search across
+textual attributes or user-
+
+00:00:25.954 --> 00:00:27.880
+generated comments over time.
+
+00:00:31.240 --> 00:00:34.370
+We will start with time series
+data which follows a simple
+
+00:00:34.370 --> 00:00:36.440
+relational representation in
+CrateDB.
+
+00:00:37.400 --> 00:00:40.207
+The distinguishing
+characteristics of time series
+
+00:00:40.207 --> 00:00:43.519
+data include timestamped
+records and are typically append
+
+00:00:43.519 --> 00:00:43.800
+only.
+
+00:00:45.080 --> 00:00:47.040
+Consider a table named weather
+data.
+
+00:00:47.440 --> 00:00:51.207
+In this table we have columns
+for timestamp, location,
+
+00:00:51.207 --> 00:00:52.920
+temperature and humidity.
+
+00:00:53.480 --> 00:00:56.369
+The humidity should also
+automatically be checked to be
+
+00:00:56.369 --> 00:00:57.040
+non negative.
+
+00:00:57.600 --> 00:01:00.840
+The primary key is a combination
+of ts and location.
+
+00:01:01.320 --> 00:01:04.730
+We also want to use a dynamic
+column policy that means to
+
+00:01:04.730 --> 00:01:07.200
+automatically add new columns at
+runtime.
+
+00:01:10.320 --> 00:01:13.520
+Now let's see how we can insert
+data into this table.
+
+00:01:14.040 --> 00:01:18.850
+The INSERT INTO command is used
+to insert a record with a
+
+00:01:18.850 --> 00:01:23.910
+timestamp, location, temperature
+and humidity values for San
+
+00:01:23.910 --> 00:01:29.136
+Francisco and we can view the
+data in our table using a SELECT
+
+00:01:29.136 --> 00:01:29.800
+command.
+
+00:01:31.520 --> 00:01:34.896
+Now let's say we want to add a
+new column wind speed to our
+
+00:01:34.896 --> 00:01:35.240
+table.
+
+00:01:35.600 --> 00:01:38.825
+Because we have set the column
+policy to dynamic, we can add
+
+00:01:38.825 --> 00:01:41.840
+this new column directly through
+an INSERT INTO command.
+
+00:01:42.240 --> 00:01:44.852
+This new column will be
+automatically added to our
+
+00:01:44.852 --> 00:01:45.160
+table.
+
+00:01:50.080 --> 00:01:53.391
+We can view the updated data in
+our table using the SELECT
+
+00:01:53.391 --> 00:01:53.840
+command.
+
+00:01:54.320 --> 00:01:57.907
+The new column is automatically
+indexed, so running a search
+
+00:01:57.907 --> 00:02:01.200
+query will be efficient even
+across large data volumes.
+
+00:02:06.240 --> 00:02:08.360
+CrateDB offers support for
+JSON.
+
+00:02:09.200 --> 00:02:12.978
+JSON is a commonly used format
+for data exchange, making it
+
+00:02:12.978 --> 00:02:16.200
+ideal for importing and
+exporting time series data.
+
+00:02:17.080 --> 00:02:20.706
+It also allows for the storage
+of arbitrary contextual data,
+
+00:02:20.706 --> 00:02:24.273
+providing additional details
+that can easily be appended to
+
+00:02:24.273 --> 00:02:25.760
+any time series data set.
+
+00:02:26.680 --> 00:02:30.130
+This added context can often
+prove helpful when analyzing
+
+00:02:30.130 --> 00:02:31.320
+patterns and trends.
+
+00:02:32.200 --> 00:02:36.413
+The object data type in CrateDB
+allows for a strict, dynamic or
+
+00:02:36.413 --> 00:02:39.720
+ignored schema depending on the
+specific use case.
+
+00:02:40.600 --> 00:02:44.414
+This means you can insert JSON
+directly as a string and any new
+
+00:02:44.414 --> 00:02:46.880
+attributes will be automatically
+indexed.
+
+00:02:47.760 --> 00:02:51.204
+This combination of flexibility
+and power makes CrateDB an
+
+00:02:51.204 --> 00:02:53.960
+excellent choice for managing
+time series data.
+
+00:02:56.240 --> 00:02:59.849
+In this example, we further
+enhance our weather data table
+
+00:02:59.849 --> 00:03:01.440
+by adding contextual data.
+
+00:03:01.880 --> 00:03:05.101
+We use the ALTER TABLE command
+to add a new column, sensor
+
+00:03:05.101 --> 00:03:08.160
+description of type OBJECT
+dynamic to store JSON data.
+
+00:03:08.680 --> 00:03:11.596
+This allows us to include
+additional details like quality
+
+00:03:11.596 --> 00:03:13.960
+of measurement and battery life
+of the sensor.
+
+00:03:14.440 --> 00:03:17.272
+We then insert a record with
+these new attributes into the
+
+00:03:17.272 --> 00:03:17.560
+table.
+
+00:03:21.600 --> 00:03:25.560
+CrateDB's dynamic schema allows
+us to immediately run a query to
+
+00:03:25.560 --> 00:03:27.360
+find devices with low battery.
+
+00:03:28.840 --> 00:03:32.059
+The SELECT statement identifies
+distinct locations where the
+
+00:03:32.059 --> 00:03:35.120
+battery life from the sensor
+description is less than 40.
+
+00:03:37.480 --> 00:03:41.400
+To use JSON data for time
+series directly, we create a new
+
+00:03:41.400 --> 00:03:45.124
+table called weather_data_json
+with columns for timestamp,
+
+00:03:45.124 --> 00:03:48.000
+location, and vals which is of
+type object.
+
+00:03:50.800 --> 00:03:54.099
+We then insert a record into the
+table with a timestamp,
+
+00:03:54.099 --> 00:03:57.167
+location, and values for
+temperature and humidity in
+
+00:03:57.167 --> 00:03:57.920
+JSON format.
+
+00:04:00.440 --> 00:04:03.720
+Using a SELECT command, we can
+view the data in our table.
+
+00:04:07.080 --> 00:04:10.744
+We can also add more attributes
+to our JSON data on the fly,
+
+00:04:10.744 --> 00:04:14.408
+such as wind speed, by simply
+including it in the INSERT INTO
+
+00:04:14.408 --> 00:04:15.000
+statement.
+
+00:04:19.760 --> 00:04:23.492
+The updated data, including the
+new wind speed attribute, can be
+
+00:04:23.492 --> 00:04:25.560
+viewed and filtered by
+immediately.
+
+00:04:32.190 --> 00:04:35.775
+In addition to numerical and
+categorical data, CrateDB is
+
+00:04:35.775 --> 00:04:38.510
+also highly effective in
+handling text data.
+
+00:04:39.390 --> 00:04:43.166
+This could include attributes
+such as machine status, user
+
+00:04:43.166 --> 00:04:46.750
+comments, or log files which can
+be valuable sources of
+
+00:04:46.750 --> 00:04:48.350
+information for analysis.
+
+00:04:49.230 --> 00:04:52.531
+Furthermore, CrateDB is
+equipped with robust full text
+
+00:04:52.531 --> 00:04:53.710
+search capabilities.
+
+00:04:54.600 --> 00:04:57.998
+This allows for efficient
+searching through these text
+
+00:04:57.998 --> 00:05:01.953
+data not just for exact matches,
+but also for typos or specific
+
+00:05:01.953 --> 00:05:03.560
+phrases and even synonyms.
+
+00:05:04.440 --> 00:05:07.462
+With CrateDB, you can
+efficiently perform a full text
+
+00:05:07.462 --> 00:05:10.760
+search through your data and
+extract the insights you need.
+
+00:05:12.480 --> 00:05:14.960
+Let us have a look at a table
+for web server logs.
+
+00:05:15.360 --> 00:05:19.630
+It contains a timestamp, IP
+address, request method, the
+
+00:05:19.630 --> 00:05:23.750
+called http://endpoint, a
+response status and the user
+
+00:05:23.750 --> 00:05:24.200
+agent.
+
+00:05:28.160 --> 00:05:31.320
+We insert a few rows to the home,
+login and products endpoints.
+
+00:05:33.800 --> 00:05:37.433
+Imagine users can type search
+criteria that will be used in
+
+00:05:37.433 --> 00:05:38.160
+the queries.
+
+00:05:38.640 --> 00:05:40.400
+Instead of typing the word home.
+
+00:05:40.720 --> 00:05:41.920
+two letters are mixed up.
+
+00:05:43.640 --> 00:05:47.235
+The fuzzy search capabilities in
+CrateDB can easily cope with
+
+00:05:47.235 --> 00:05:48.320
+these misspellings.
+
+00:05:48.960 --> 00:05:52.374
+This query uses a fuzziness of
+five, which means there can be
+
+00:05:52.374 --> 00:05:56.009
+Levenshtein distance of five
+or five letters that are allowed
+
+00:05:56.009 --> 00:05:59.424
+to be different in the search
+term and the actual term in the
+
+00:05:59.424 --> 00:05:59.920
+database.
+
+00:06:02.280 --> 00:06:04.866
+Of course, full text search can
+be combined with other
+
+00:06:04.866 --> 00:06:05.760
+attributes as well.
+
+00:06:06.120 --> 00:06:10.340
+For example, all successful HTTP
+calls to the home endpoint can
+
+00:06:10.340 --> 00:06:14.560
+be found by adding the condition
+of response status equals 200.
+
+00:06:16.360 --> 00:06:18.040
+There are many more options
+available.
+
+00:06:18.440 --> 00:06:21.408
+Please refer to the CrateDB
+documentation for all the
+
+00:06:21.408 --> 00:06:22.920
+details on full text search.
+
+00:06:26.600 --> 00:06:29.830
+CrateDB supports the float
+vector data type for columns
+
+00:06:29.830 --> 00:06:32.720
+which is ideal for storing
+floating point vectors.
+
+00:06:33.560 --> 00:06:38.063
+This data type can handle up to
+2048 dimensions, accommodating a
+
+00:06:38.063 --> 00:06:40.280
+wide array of data complexities.
+
+00:06:41.160 --> 00:06:44.680
+To efficiently index these
+vectors, CrateDB utilizes A
+
+00:06:44.680 --> 00:06:48.514
+Hierarchical Navigable Small
+World graph, an efficient index
+
+00:06:48.514 --> 00:06:52.160
+for searching similar vectors in
+high dimensional spaces.
+
+00:06:53.080 --> 00:06:56.236
+An approximate k-Nearest
+Neighbor Search can be done with
+
+00:06:56.236 --> 00:06:59.720
+the knn match function based on
+an Euclidean distance function.
+
+00:07:00.560 --> 00:07:04.160
+This combination of features
+enhances CrateDB's ability to
+
+00:07:04.160 --> 00:07:06.440
+handle complex multidimensional
+data.
+
+00:07:07.320 --> 00:07:10.330
+The knn match can be
+combined with other conditions
+
+00:07:10.330 --> 00:07:10.760
+as well.
+
+00:07:11.640 --> 00:07:14.663
+Vectors are very prominent
+nowadays when it comes to
+
+00:07:14.663 --> 00:07:18.200
+semantic search, where we also
+see a big area of application.
+
+00:07:19.040 --> 00:07:22.734
+In this example, we focus on
+finding similar patterns as a
+
+00:07:22.734 --> 00:07:25.240
+common problem in time series
+analysis.
+
+00:07:26.120 --> 00:07:29.290
+Although there are multiple
+different ways to identify
+
+00:07:29.290 --> 00:07:32.922
+similar patterns, executing a
+similarity search on a vector is
+
+00:07:32.922 --> 00:07:33.960
+a viable solution.
+
+00:07:35.080 --> 00:07:38.669
+One could create vectors of
+various different features like
+
+00:07:38.669 --> 00:07:42.080
+minimum or maximum values,
+moving averages et cetera.
+
+00:07:43.000 --> 00:07:46.325
+In our example, we want to find
+weeks with similar temperature
+
+00:07:46.325 --> 00:07:46.800
+patterns.
+
+00:07:47.200 --> 00:07:50.906
+Therefore, we create a table
+called weather_patterns_weekly
+
+00:07:50.906 --> 00:07:54.798
+that stores the location, the
+particular week, and the maximum
+
+00:07:54.798 --> 00:07:57.640
+temperatures of every single day
+in a vector.
+
+00:08:00.000 --> 00:08:03.266
+To populate this table, we
+aggregate the temperature values
+
+00:08:03.266 --> 00:08:05.880
+of our weather data table in the
+following way.
+
+00:08:06.600 --> 00:08:10.228
+The common table expression of
+this statement truncates the
+
+00:08:10.228 --> 00:08:13.736
+date of measurements to weeks
+and days and calculates the
+
+00:08:13.736 --> 00:08:16.640
+maximum temperature per
+location, week and day.
+
+00:08:18.000 --> 00:08:21.520
+The outer SELECT statement
+groups the data by location and
+
+00:08:21.520 --> 00:08:24.862
+week to aggregate the daily
+maximum values into a float
+
+00:08:24.862 --> 00:08:25.279
+vector.
+
+00:08:26.080 --> 00:08:29.590
+The resulting data is inserted
+into the weather patterns weekly
+
+00:08:29.590 --> 00:08:29.920
+table.
+
+00:08:31.880 --> 00:08:34.714
+As we can see, the result
+contains a vector of daily
+
+00:08:34.714 --> 00:08:36.640
+temperatures per location and
+week.
+
+00:08:39.320 --> 00:08:43.484
+In order to find similar weeks,
+we execute a k-nearest neighbor
+
+00:08:43.484 --> 00:08:47.516
+search for the week of 20th
+February 2023 represented by the
+
+00:08:47.516 --> 00:08:48.639
+given time stamp.
+
+00:08:49.440 --> 00:08:53.094
+In order to do so, we select the
+temperature pattern of the week
+
+00:08:53.094 --> 00:08:55.793
+of interest, execute a
+similarity search on the
+
+00:08:55.793 --> 00:08:59.222
+temperature pattern and want to
+find the top 10 most similar
+
+00:08:59.222 --> 00:08:59.560
+weeks.
+
+00:09:00.160 --> 00:09:02.520
+The score value represents the
+similarity.
+
+00:09:03.720 --> 00:09:07.043
+Please note that this value is
+not the actual distance of
+
+00:09:07.043 --> 00:09:10.080
+vectors, but an arbitrary value
+to rank the results.
+
+00:09:11.400 --> 00:09:14.991
+For more details on the score
+value, please refer to the CrateDB
+
+00:09:14.991 --> 00:09:15.960
+documentation.
+
+00:09:17.960 --> 00:09:20.804
+The results provide us with
+various weeks that have similar
+
+00:09:20.804 --> 00:09:21.800
+temperature patterns.
+
+00:09:24.080 --> 00:09:27.330
+If we look at a visualization of
+the similar data sets, we can
+
+00:09:27.330 --> 00:09:30.530
+see that the weekly temperature
+patterns look similar to each
+
+00:09:30.530 --> 00:09:30.840
+other.
+
+00:09:31.680 --> 00:09:35.459
+Obviously this example is very
+simple and for a real comparison
+
+00:09:35.459 --> 00:09:38.765
+of patterns we should do a
+proper normalization of data
+
+00:09:38.765 --> 00:09:39.120
+first.
+
+00:09:40.040 --> 00:09:43.288
+Still, it shows how the
+similarity search can be used to
+
+00:09:43.288 --> 00:09:44.200
+detect patterns.
+
+00:09:45.040 --> 00:09:48.813
+The vector search can be used
+for a lot of different cases,
+
+00:09:48.813 --> 00:09:52.147
+especially when creating
+embeddings of textual data,
+
+00:09:52.147 --> 00:09:54.600
+videos, audio files or other
+binaries.
+
+00:09:55.480 --> 00:09:57.040
+This is not part of this course.
+
+00:09:57.320 --> 00:10:00.506
+Please refer to the CrateDB
+documentation and other
+
+00:10:00.506 --> 00:10:03.573
+tutorials, for example, about
+CrateDB's Lang chain
+
+00:10:03.573 --> 00:10:06.880
+integration on how to work with
+large language models.
+
+00:10:10.720 --> 00:10:14.762
+Geospatial data plays a critical
+role in time series solutions,
+
+00:10:14.762 --> 00:10:17.920
+offering a spatial context to
+the timestamp data.
+
+00:10:18.800 --> 00:10:22.290
+This data type allows us to
+track changes over time in a
+
+00:10:22.290 --> 00:10:25.964
+particular geographic area,
+which can be vital for numerous
+
+00:10:25.964 --> 00:10:26.760
+applications.
+
+00:10:27.640 --> 00:10:30.408
+For example, in the
+transportation industry,
+
+00:10:30.408 --> 00:10:33.976
+geospatial data can help track
+vehicle routes and monitor
+
+00:10:33.976 --> 00:10:35.760
+traffic conditions over time.
+
+00:10:36.640 --> 00:10:40.285
+In environmental studies, it can
+be used to monitor changes in
+
+00:10:40.285 --> 00:10:42.600
+weather patterns or wildlife
+movements.
+
+00:10:43.480 --> 00:10:47.097
+By integrating geospatial data
+into time series analysis, we
+
+00:10:47.097 --> 00:10:50.360
+can uncover spatial trends and
+patterns, enhancing our
+
+00:10:50.360 --> 00:10:53.800
+understanding and enabling more
+informed decision making.
+
+00:10:56.160 --> 00:10:58.871
+For this introduction, let us
+create a simple table for the
+
+00:10:58.871 --> 00:11:01.040
+cities that are referenced in
+the weather data.
+
+00:11:02.800 --> 00:11:05.160
+We want to insert a few rows
+into the new table.
+
+00:11:10.600 --> 00:11:13.994
+Selecting this data shows that
+Create DB interprets the data
+
+00:11:13.994 --> 00:11:17.500
+correctly and for example opens
+the coordinates on Open Street
+
+00:11:17.500 --> 00:11:19.560
+Map when clicking on the arrow
+icon.
+
+00:11:21.360 --> 00:11:24.883
+The geospatial data can now be
+used for example to visualize
+
+00:11:24.883 --> 00:11:28.290
+weather conditions on a map or
+automatically figure out if
+
+00:11:28.290 --> 00:11:31.640
+storm events will cross a
+certain country that is defined
+
+00:11:31.640 --> 00:11:32.679
+via its Geo shape.
+
+00:11:33.880 --> 00:11:37.380
+All of it can be done via the
+available functions to query
+
+00:11:37.380 --> 00:11:39.160
+geodata directly in Create DB.
+
+00:11:43.280 --> 00:11:47.015
+Binary, Large Object or BLOB is
+another key data type that can
+
+00:11:47.015 --> 00:11:49.920
+be effectively managed in time
+series solutions.
+
+00:11:50.760 --> 00:11:54.552
+This type of data can range from
+images and audio files to logs
+
+00:11:54.552 --> 00:11:57.160
+or even serialized machine
+learning models.
+
+00:11:58.040 --> 00:12:01.823
+Storing and retrieving BLOB data
+efficiently is crucial in many
+
+00:12:01.823 --> 00:12:05.134
+times series applications,
+especially when dealing with
+
+00:12:05.134 --> 00:12:07.440
+multimedia content or large log
+files.
+
+00:12:08.320 --> 00:12:11.942
+CrateDB supports BLOB storage
+allowing users to store and
+
+00:12:11.942 --> 00:12:14.828
+retrieve binary data
+efficiently, making it an
+
+00:12:14.828 --> 00:12:18.513
+excellent choice for managing
+complex time series data with
+
+00:12:18.513 --> 00:12:19.680
+various data types.
+
+00:12:20.520 --> 00:12:23.172
+They are stored in separate
+tables which allows for
+
+00:12:23.172 --> 00:12:26.080
+different disk configurations
+than the regular database.
+
+00:12:26.080 --> 00:12:31.347
+Files upload and download can be
+executed via the HTTP interface
+
+00:12:31.347 --> 00:12:32.320
+of CrateDB.
+
+00:12:33.240 --> 00:12:36.240
+All metadata of binaries is
+available via SQL.
+
+00:12:37.120 --> 00:12:41.472
+As an alternative, binaries can
+also be stored in text columns
+
+00:12:41.472 --> 00:12:43.200
+using a base 64 encoding.
+
+00:12:44.520 --> 00:12:47.939
+This closes our overview of how
+CrateDB handles various data
+
+00:12:47.939 --> 00:12:51.193
+types that are relevant for
+comprehensive time series data
+
+00:12:51.193 --> 00:12:51.800
+management.

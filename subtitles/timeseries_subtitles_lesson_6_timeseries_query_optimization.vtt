@@ -1,0 +1,801 @@
+﻿WEBVTT
+
+00:00:00.320 --> 00:00:03.710
+Time series data often presents
+unique challenges due to its
+
+00:00:03.710 --> 00:00:05.600
+large volume and temporal
+nature.
+
+00:00:06.440 --> 00:00:10.325
+Therefore, optimizing queries
+becomes crucial for maintaining
+
+00:00:10.325 --> 00:00:12.080
+performance and scalability.
+
+00:00:13.400 --> 00:00:16.506
+In this video, we'll explore
+essential techniques for
+
+00:00:16.506 --> 00:00:19.440
+efficiently querying time series
+data in CrateDB.
+
+00:00:20.680 --> 00:00:23.393
+To find bottlenecks and
+potential optimization
+
+00:00:23.393 --> 00:00:26.743
+opportunities in your time
+series queries, consider using
+
+00:00:26.743 --> 00:00:28.360
+the EXPLAIN ANALYZE command.
+
+00:00:29.240 --> 00:00:32.950
+When you prepend EXPLAIN
+ANALYZE to your SQL query, CrateDB
+
+00:00:32.950 --> 00:00:36.661
+not only generates the
+execution plan but also runs the
+
+00:00:36.661 --> 00:00:39.680
+query and captures detailed
+runtime statistics.
+
+00:00:40.320 --> 00:00:44.011
+This includes the time spent in
+various operations such as
+
+00:00:44.011 --> 00:00:47.640
+parsing, planning, and the
+actual execution of the query.
+
+00:00:48.480 --> 00:00:52.607
+For CrateDB, which relies on
+Lucene indexes, EXPLAIN ANALYZE
+
+00:00:52.607 --> 00:00:56.269
+can offer insights into how
+queries are executed using
+
+00:00:56.269 --> 00:00:58.199
+Lucene's indexing mechanisms.
+
+00:01:00.080 --> 00:01:03.730
+In this example, we illustrate
+the time taken to run a SELECT
+
+00:01:03.730 --> 00:01:07.203
+query where certain conditions
+are applied, filtering data
+
+00:01:07.203 --> 00:01:08.439
+based on temperature.
+
+00:01:09.240 --> 00:01:12.772
+The time number represents the
+query execution time in
+
+00:01:12.772 --> 00:01:16.818
+milliseconds, while the green
+labels represent execution times
+
+00:01:16.818 --> 00:01:20.993
+for individual operations within
+the overall query, such as data
+
+00:01:20.993 --> 00:01:22.920
+scans, joins, or aggregations.
+
+00:01:24.800 --> 00:01:28.265
+These granular timings provide
+insight into the database's
+
+00:01:28.265 --> 00:01:31.495
+performance, helping us
+understand where optimizations
+
+00:01:31.495 --> 00:01:32.200
+can be made.
+
+00:01:33.080 --> 00:01:36.872
+For instance, if a particular
+operation is taking longer than
+
+00:01:36.872 --> 00:01:40.360
+expected, we might consider
+indexing strategies or query
+
+00:01:40.360 --> 00:01:42.440
+rewriting to enhance
+performance.
+
+00:01:43.760 --> 00:01:47.161
+A full table scan, where the
+database engine examines every
+
+00:01:47.161 --> 00:01:50.280
+single row in a table, can lead
+to performance issues.
+
+00:01:50.760 --> 00:01:55.060
+It's a process that is both CPU
+and IO intensive and can lead to
+
+00:01:55.060 --> 00:01:58.898
+inefficient execution when
+dealing with large time series
+
+00:01:58.898 --> 00:01:59.560
+data sets.
+
+00:02:01.040 --> 00:02:04.192
+For instance, let's consider a
+query aimed at calculating the
+
+00:02:04.192 --> 00:02:06.480
+average temperature over a
+two-month period.
+
+00:02:08.080 --> 00:02:11.461
+Executing it on a non sharded
+and non portion table requires a
+
+00:02:11.461 --> 00:02:12.320
+full table scan.
+
+00:02:13.720 --> 00:02:16.480
+Using partitioning and sharding
+avoids that.
+
+00:02:16.480 --> 00:02:19.419
+All data needs to be scanned on
+the one hand, and the
+
+00:02:19.419 --> 00:02:22.903
+aggregation can be executed in
+parallel on the different shards
+
+00:02:22.903 --> 00:02:23.720
+and partitions.
+
+00:02:25.320 --> 00:02:27.200
+Let's look at this example in
+practice.
+
+00:02:28.680 --> 00:02:32.000
+We first need to create a new
+table and import weather data.
+
+00:02:36.760 --> 00:02:40.302
+Now let's create another table
+as a partition table based on
+
+00:02:40.302 --> 00:02:42.800
+time intervals such as monthly
+partitions.
+
+00:02:43.440 --> 00:02:46.985
+By doing this, we enable 
+CrateDB to quickly return just
+
+00:02:46.985 --> 00:02:50.702
+the relevant data needed for the
+query, bypassing all irrelevant
+
+00:02:50.702 --> 00:02:51.160
+records.
+
+00:02:52.720 --> 00:02:56.455
+Let's run the query on both
+partitioned and non partitioned
+
+00:02:56.455 --> 00:02:59.754
+tables and use the EXPLAIN
+ANALYZE command to better
+
+00:02:59.754 --> 00:03:02.680
+understand which partitions have
+been queried.
+
+00:03:03.280 --> 00:03:07.007
+The execution trace of the query
+on the non partition table looks
+
+00:03:07.007 --> 00:03:08.080
+like the following.
+
+00:03:08.960 --> 00:03:11.320
+Here we can see that one
+partition was queried.
+
+00:03:12.680 --> 00:03:15.120
+We can run the same query on
+partition table.
+
+00:03:15.560 --> 00:03:19.363
+Now, as we inspect the query
+plan, we can see that the second
+
+00:03:19.363 --> 00:03:23.290
+query runs on three partitions
+and the total execution time was
+
+00:03:23.290 --> 00:03:24.640
+reduced significantly.
+
+00:03:25.280 --> 00:03:28.977
+A correct partitioning approach
+streamlines query execution and
+
+00:03:28.977 --> 00:03:32.617
+significantly reduces the time
+and resources required to fetch
+
+00:03:32.617 --> 00:03:33.600
+the desired data.
+
+00:03:35.280 --> 00:03:38.662
+With the next example, we are
+going to examine the impact of
+
+00:03:38.662 --> 00:03:40.880
+utilizing indexes on query
+performance.
+
+00:03:40.880 --> 00:03:41.760
+In CrateDB
+
+00:03:42.640 --> 00:03:46.458
+the query returns the average
+temperature for each month and
+
+00:03:46.458 --> 00:03:50.214
+considers only temperature
+records higher than 20 and lower
+
+00:03:50.214 --> 00:03:50.840
+than -20°.
+
+00:03:51.680 --> 00:03:55.400
+To examine the execution phases
+of this query, we run it with
+
+00:03:55.400 --> 00:03:56.360
+EXPLAIN ANALYZE.
+
+00:03:57.520 --> 00:04:00.720
+The query employs the abs()
+function in the WHERE clause.
+
+00:04:01.640 --> 00:04:05.701
+During the query execution, abs()
+triggers a generic function
+
+00:04:05.701 --> 00:04:06.040
+scan.
+
+00:04:06.240 --> 00:04:09.500
+It doesn't directly benefit from
+the indexes on the temperature
+
+00:04:09.500 --> 00:04:11.640
+column, which leads to a full
+table scan.
+
+00:04:12.560 --> 00:04:16.219
+It means that the abs() function
+requires evaluating the absolute
+
+00:04:16.219 --> 00:04:19.993
+value of the temperature of each
+single record, which impacts the
+
+00:04:19.993 --> 00:04:21.480
+overall query performance.
+
+00:04:22.200 --> 00:04:26.174
+Changing the query to use direct
+comparison operators allows to
+
+00:04:26.174 --> 00:04:26.920
+use indexes.
+
+00:04:27.760 --> 00:04:31.291
+By running EXPLAIN ANALYZE we
+can observe that CrateDB now
+
+00:04:31.291 --> 00:04:34.650
+runs multiple queries which
+utilize underlying indexes to
+
+00:04:34.650 --> 00:04:38.240
+quickly locate and retrieve the
+relevant temperature records.
+
+00:04:40.120 --> 00:04:43.306
+This is one example where the
+right choice of predicates in
+
+00:04:43.306 --> 00:04:45.962
+your SQL queries can have a
+significant impact on
+
+00:04:45.962 --> 00:04:46.599
+performance.
+
+00:04:47.480 --> 00:04:51.183
+The execution trace shows you if
+a generic function query is
+
+00:04:51.183 --> 00:04:54.643
+executed of an index can be
+leveraged without evaluating
+
+00:04:54.643 --> 00:04:56.040
+each individual record.
+
+00:04:56.920 --> 00:04:58.840
+This has been a very simple
+example.
+
+00:04:59.160 --> 00:05:02.000
+Please check the execution trace
+with your own queries.
+
+00:05:02.840 --> 00:05:06.680
+Similar effects can be achieved,
+for example, when sorting data.
+
+00:05:07.600 --> 00:05:11.139
+Using an index for sorting is
+highly beneficial over sorting
+
+00:05:11.139 --> 00:05:11.720
+in memory.
+
+00:05:13.120 --> 00:05:16.967
+In CrateDB, an array is a data
+type that allows you to store a
+
+00:05:16.967 --> 00:05:20.694
+sequence of elements of the same
+type because they can handle
+
+00:05:20.694 --> 00:05:23.519
+multiple values in a single
+ordered structure.
+
+00:05:23.880 --> 00:05:27.180
+They are particularly useful for
+batch processing and the
+
+00:05:27.180 --> 00:05:29.400
+efficient representation of data
+sets.
+
+00:05:29.840 --> 00:05:33.284
+In the context of CrateDB,
+which is optimized for handling
+
+00:05:33.284 --> 00:05:36.500
+large scale and time series
+data, arrays can be used to
+
+00:05:36.500 --> 00:05:40.117
+store sequences of measurements
+which can significantly reduce
+
+00:05:40.117 --> 00:05:41.840
+the overall storage footprint.
+
+00:05:42.600 --> 00:05:44.120
+Let's take a look at an example.
+
+00:05:45.440 --> 00:05:48.988
+The CREATE table statement for
+sensor readings in CrateDB is
+
+00:05:48.988 --> 00:05:52.480
+set up to store each sensor
+reading as an individual record.
+
+00:05:52.920 --> 00:05:56.508
+It includes a timestamp with a
+time zone for when the reading
+
+00:05:56.508 --> 00:06:00.039
+was taken, a text field for the
+sensor ID, a double-precision
+
+00:06:00.039 --> 00:06:03.628
+floating point number for the
+battery level, and a text field
+
+00:06:03.628 --> 00:06:04.960
+for the battery status.
+
+00:06:05.600 --> 00:06:08.621
+This typical setup is suitable
+for scenarios where the
+
+00:06:08.621 --> 00:06:12.027
+frequency of data insertions is
+relatively low or the storage
+
+00:06:12.027 --> 00:06:14.720
+and performance costs are not a
+primary concern.
+
+00:06:15.160 --> 00:06:18.083
+However, it can become
+inefficient when dealing with
+
+00:06:18.083 --> 00:06:21.337
+very large data sets as each
+sensor reading is stored as a
+
+00:06:21.337 --> 00:06:24.812
+separate row, which can lead to
+a higher storage footprint and
+
+00:06:24.812 --> 00:06:27.845
+potentially slower query
+performance due to the higher
+
+00:06:27.845 --> 00:06:29.280
+number of rows to process.
+
+00:06:30.960 --> 00:06:34.558
+To tackle the challenge of
+efficiently storing a massive
+
+00:06:34.558 --> 00:06:38.662
+data set containing 120 million
+records which occupy 6 gigabytes
+
+00:06:38.662 --> 00:06:41.440
+of space, we applied several
+optimizations.
+
+00:06:42.200 --> 00:06:44.800
+We restructured time data to be
+modeled as an array.
+
+00:06:45.560 --> 00:06:48.240
+The time bucket field is
+truncated to the day level.
+
+00:06:48.960 --> 00:06:51.982
+Similarly, the actual sensor
+measurements are stored in
+
+00:06:51.982 --> 00:06:52.360
+arrays.
+
+00:06:52.720 --> 00:06:55.820
+This means that instead of one
+row per measurement, you have
+
+00:06:55.820 --> 00:06:57.040
+one row per time bucket.
+
+00:06:57.880 --> 00:07:01.104
+A more aggressive compression
+algorithm, for example best
+
+00:07:01.104 --> 00:07:04.495
+compression, is applied to the
+table taking advantage of the
+
+00:07:04.495 --> 00:07:05.440
+array structures.
+
+00:07:06.200 --> 00:07:09.636
+Indexes on the array fields are
+turned off to reduce the storage
+
+00:07:09.636 --> 00:07:10.800
+space used by indexes.
+
+00:07:12.080 --> 00:07:16.121
+By implementing these changes,
+the storage requirement was
+
+00:07:16.121 --> 00:07:19.957
+dramatically reduced from 6
+gigabytes to 1.1 gigabytes,
+
+00:07:19.957 --> 00:07:23.040
+achieving an 80% reduction in
+storage space.
+
+00:07:23.720 --> 00:07:27.154
+This example illustrates how to
+leverage the array data type to
+
+00:07:27.154 --> 00:07:30.267
+reduce storage requirements and
+potentially improve query
+
+00:07:30.267 --> 00:07:32.360
+performance for time series use
+cases.
+
+00:07:34.440 --> 00:07:38.346
+Another vital element of CrateDB's
+comprehensive feature set
+
+00:07:38.346 --> 00:07:41.560
+is the Common Table Expression,
+also known as CTE.
+
+00:07:42.400 --> 00:07:46.733
+CTE serve as a potent instrument
+for enhancing the performance
+
+00:07:46.733 --> 00:07:49.760
+and readability of queries
+within CrateDB.
+
+00:07:49.760 --> 00:07:53.525
+In certain scenarios, such as
+those involving intricate
+
+00:07:53.525 --> 00:07:56.753
+queries that necessitate
+numerous filtering and
+
+00:07:56.753 --> 00:08:00.788
+aggregation steps, or when
+there's a need to repeatedly use
+
+00:08:00.788 --> 00:08:04.486
+a data subset within a single
+query, CTE's can provide
+
+00:08:04.486 --> 00:08:08.320
+performance advantages over
+traditional join operations.
+
+00:08:08.320 --> 00:08:10.040
+Suppose we have 3 tables:
+
+00:08:10.040 --> 00:08:13.826
+The sales table records each
+sale transaction, the sale_items
+
+00:08:13.826 --> 00:08:17.491
+table details items within each
+sale, and the product table
+
+00:08:17.491 --> 00:08:20.240
+which maintains information on
+each product.
+
+00:08:21.120 --> 00:08:25.011
+Now we want to find the total
+quantity sold for a specific
+
+00:08:25.011 --> 00:08:27.320
+product within a given date
+range.
+
+00:08:27.320 --> 00:08:31.667
+To calculate the total quantity
+of the product named gadgets
+
+00:08:31.667 --> 00:08:36.087
+sold within the date range from
+January 1st, 2024 to February
+
+00:08:36.087 --> 00:08:36.800
+1st, 2024
+
+00:08:36.800 --> 00:08:40.678
+the query, joins sales,
+sale_items and products tables
+
+00:08:40.678 --> 00:08:42.720
+based on their respective IDs.
+
+00:08:43.640 --> 00:08:47.339
+Even though this is a perfectly
+valid SQL, it may not be the
+
+00:08:47.339 --> 00:08:50.403
+most efficient strategy. Even
+without considering the
+
+00:08:50.403 --> 00:08:52.600
+complexities of a distributed
+system,
+
+00:08:52.880 --> 00:08:56.520
+parallel processing and disk/memory
+options.
+
+00:08:56.520 --> 00:08:59.920
+There are still many different
+possible strategies here.
+
+00:09:01.320 --> 00:09:04.080
+For instance, Gadget product may
+be sold rarely.
+
+00:09:04.080 --> 00:09:08.089
+We could then start by looking
+up its product_id, then locate
+
+00:09:08.089 --> 00:09:11.710
+all instances of its sales in
+the sale_items table, and
+
+00:09:11.710 --> 00:09:15.719
+finally narrow down those sales
+to the specific date range in
+
+00:09:15.719 --> 00:09:16.560
+January 2024.
+
+00:09:17.400 --> 00:09:20.987
+If Gadget is a popular product
+in a data set covering many
+
+00:09:20.987 --> 00:09:24.514
+years of sales, starting the
+query by selecting all sales
+
+00:09:24.514 --> 00:09:28.162
+made in January 2024 from the
+sales table, then identifying
+
+00:09:28.162 --> 00:09:31.932
+which of these sales include
+Gadget could be a more effective
+
+00:09:31.932 --> 00:09:32.480
+strategy.
+
+00:09:34.320 --> 00:09:37.858
+The impact of using a suboptimal
+execution plan here could be
+
+00:09:37.858 --> 00:09:40.939
+significant as we could find
+ourselves trying to join
+
+00:09:40.939 --> 00:09:42.880
+millions and millions of
+records.
+
+00:09:45.480 --> 00:09:49.164
+In our example, we consider the
+specific use case where our
+
+00:09:49.164 --> 00:09:52.480
+product Gadget is a niche item
+with infrequent sales.
+
+00:09:52.920 --> 00:09:56.300
+The modified query we have
+constructed using Common Table
+
+00:09:56.300 --> 00:10:00.031
+Expressions efficiently isolates
+the relevant product ID first,
+
+00:10:00.031 --> 00:10:03.703
+reducing the subsequent search
+space to just the sales of this
+
+00:10:03.703 --> 00:10:04.520
+specific item.
+
+00:10:04.760 --> 00:10:08.077
+Before checking the
+corresponding sales records for
+
+00:10:08.077 --> 00:10:11.842
+the selected date range in the
+relevant_product_ids CTE, we
+
+00:10:11.842 --> 00:10:15.925
+limit our initial search to the
+minimal set of relevant product
+
+00:10:15.925 --> 00:10:20.137
+entries, avoiding a full scan of
+the potentially large sale items
+
+00:10:20.137 --> 00:10:20.520
+table.
+
+00:10:21.280 --> 00:10:24.509
+We then focus on the sale
+transactions associated with
+
+00:10:24.509 --> 00:10:27.914
+these product IDs, which is
+expected to be a small subset
+
+00:10:27.914 --> 00:10:31.320
+given the product's rarity, thus
+speeding up the process.
+
+00:10:32.640 --> 00:10:36.527
+Finally, by filtering the sales
+data for these specific sale
+
+00:10:36.527 --> 00:10:40.479
+items, we ensure that we only
+consider the sales transactions
+
+00:10:40.479 --> 00:10:44.240
+that happened within our desired
+date range, January 2024.
+
+00:10:45.720 --> 00:10:49.362
+This stepwise refinement ensures
+that each subsequent join
+
+00:10:49.362 --> 00:10:52.634
+operation deals with the
+smallest possible data set,
+
+00:10:52.634 --> 00:10:56.030
+leading to faster query
+performance and more efficient
+
+00:10:56.030 --> 00:10:57.080
+use of resources.
+
+00:10:58.320 --> 00:11:01.781
+Overall, CTE's make the query
+more readable and easier to
+
+00:11:01.781 --> 00:11:05.361
+maintain, especially for complex
+queries involving multiple
+
+00:11:05.361 --> 00:11:05.720
+steps.
+
+00:11:06.280 --> 00:11:09.745
+Furthermore, CTE's can keep the
+intermediate results, which can
+
+00:11:09.745 --> 00:11:13.211
+be beneficial if the same subset
+of data is used multiple times
+
+00:11:13.211 --> 00:11:16.027
+in the query, reducing the
+number of scans over the
+
+00:11:16.027 --> 00:11:16.840
+original table.
+
+00:11:18.080 --> 00:11:21.482
+Mastering time series query
+optimization in CrateDB is
+
+00:11:21.482 --> 00:11:24.520
+essential for ensuring efficient
+data processing.
+
+00:11:25.320 --> 00:11:28.465
+By integrating the strategies
+highlighted in this video,
+
+00:11:28.465 --> 00:11:31.832
+you'll be well positioned to
+achieve optimal performance for
+
+00:11:31.832 --> 00:11:34.040
+your time series analytics in
+CrateDB.

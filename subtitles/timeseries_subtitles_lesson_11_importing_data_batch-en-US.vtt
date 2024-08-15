@@ -1,0 +1,277 @@
+﻿WEBVTT
+
+00:00:00.080 --> 00:00:03.767
+Dask is an open source library
+designed to parallelize and
+
+00:00:03.767 --> 00:00:07.517
+scale out Python code, with a
+particular focus on numerical
+
+00:00:07.517 --> 00:00:09.080
+and analytical computing.
+
+00:00:09.960 --> 00:00:13.575
+At its core, Dask enables large
+scale computations to be
+
+00:00:13.575 --> 00:00:17.509
+executed efficiently on single
+machines or across distributed
+
+00:00:17.509 --> 00:00:18.080
+clusters.
+
+00:00:19.440 --> 00:00:23.482
+In this notebook, we will show
+how to use Dask and Crate DB for
+
+00:00:23.482 --> 00:00:26.829
+the large scale import of
+weather readings from 1250
+
+00:00:26.829 --> 00:00:27.840
+cities globally.
+
+00:00:29.240 --> 00:00:33.220
+This reach data set can be found
+on Kaggle and includes metrics
+
+00:00:33.220 --> 00:00:36.703
+like temperature ranges,
+precipitation, wind speed, and
+
+00:00:36.703 --> 00:00:39.564
+more, allowing us to analyze
+weather patterns
+
+00:00:39.564 --> 00:00:40.559
+comprehensively.
+
+00:00:42.400 --> 00:00:45.752
+As a first step, we set up our
+environment by running a pip
+
+00:00:45.752 --> 00:00:46.200
+command.
+
+00:00:46.640 --> 00:00:49.993
+This command installs Dask
+alongside Pandas for data
+
+00:00:49.993 --> 00:00:53.600
+manipulation and SQLAlchemy
+for database operations.
+
+00:00:54.840 --> 00:00:58.040
+In this notebook, we're working
+with three key data sets.
+
+00:00:58.640 --> 00:01:01.291
+Daily weather data data set
+contains the weather
+
+00:01:01.291 --> 00:01:03.240
+measurements across various
+cities.
+
+00:01:03.960 --> 00:01:07.236
+Cities data set provides details
+on the cities included in our
+
+00:01:07.236 --> 00:01:08.120
+weather data set.
+
+00:01:08.840 --> 00:01:12.121
+Similarly, Countries data set
+contains information about the
+
+00:01:12.121 --> 00:01:15.080
+countries corresponding to the
+cities in our data set.
+
+00:01:17.080 --> 00:01:21.012
+To efficiently handle these data
+sets, especially the potentially
+
+00:01:21.012 --> 00:01:24.765
+large parquet file containing
+daily weather data, we use Dasks
+
+00:01:24.765 --> 00:01:25.600
+Dataframe API.
+
+00:01:26.360 --> 00:01:29.720
+By leveraging Dasks, we can
+handle large data sets that
+
+00:01:29.720 --> 00:01:33.560
+exceed the memory capacity of a
+single machine, processing data
+
+00:01:33.560 --> 00:01:37.220
+in chunks without loading the
+entire data set into memory at
+
+00:01:37.220 --> 00:01:37.520
+once.
+
+00:01:38.160 --> 00:01:41.106
+Once we've loaded the data, we
+examine its structure and
+
+00:01:41.106 --> 00:01:41.520
+content.
+
+00:01:41.920 --> 00:01:44.809
+We look for the number of
+records and the data types of
+
+00:01:44.809 --> 00:01:48.214
+each column and get a glimpse of
+the first few rows to understand
+
+00:01:48.214 --> 00:01:49.040
+the data format.
+
+00:01:50.840 --> 00:01:53.160
+The next step loads data into
+crate DB.
+
+00:01:53.640 --> 00:01:57.465
+Crate DB is uniquely equipped to
+handle large data sets like ours
+
+00:01:57.465 --> 00:01:59.320
+with efficiency and flexibility.
+
+00:01:59.760 --> 00:02:03.112
+To take full advantage of Crate
+DB's capabilities, including
+
+00:02:03.112 --> 00:02:05.970
+full text indexes, we'll
+manually create our tables
+
+00:02:05.970 --> 00:02:06.960
+before the import.
+
+00:02:08.320 --> 00:02:11.257
+The two connection strings
+illustrate how to establish a
+
+00:02:11.257 --> 00:02:14.194
+connection to our CrateDB
+instance depending on whether
+
+00:02:14.194 --> 00:02:16.720
+your database is hosted locally
+or in the cloud.
+
+00:02:17.440 --> 00:02:21.029
+For those using CrateDB Cloud,
+the platform's import mechanism
+
+00:02:21.029 --> 00:02:24.618
+is the most straightforward and
+efficient method as it directly
+
+00:02:24.618 --> 00:02:28.095
+uploads data to a staging area
+for import, minimizing network
+
+00:02:28.095 --> 00:02:28.599
+transfer.
+
+00:02:29.360 --> 00:02:33.151
+However, if you're running CrateDB
+locally or prefer a more
+
+00:02:33.151 --> 00:02:36.632
+hands on approach, dasks
+parallelized data frame import
+
+00:02:36.632 --> 00:02:38.000
+is highly recommended.
+
+00:02:38.520 --> 00:02:41.982
+Unlike pandas which is single
+threaded, DAS allows us to
+
+00:02:41.982 --> 00:02:45.505
+utilize multiple CPUs and
+partition the data for parallel
+
+00:02:45.505 --> 00:02:48.360
+import, significantly speeding
+up the process.
+
+00:02:50.120 --> 00:02:53.373
+When importing data with Dasks,
+it's crucial to balance the
+
+00:02:53.373 --> 00:02:55.760
+workload to avoid overloading
+the database.
+
+00:02:56.440 --> 00:02:59.690
+Experimenting with the chunk
+size can help find the optimal
+
+00:02:59.690 --> 00:03:02.400
+setting for your specific CrateDB
+configuration.
+
+00:03:03.080 --> 00:03:06.898
+For example, a chunk size of
+10,000 records has been shown to
+
+00:03:06.898 --> 00:03:10.901
+work well on a single node CrateDB
+setup with four gigabytes of
+
+00:03:10.901 --> 00:03:11.640
+heap memory.
+
+00:03:12.280 --> 00:03:15.923
+Running the import on a CrateDB
+instance with adequate resources
+
+00:03:15.923 --> 00:03:17.800
+can yield impressive
+performance.
+
+00:03:18.320 --> 00:03:22.317
+In one scenario, a Docker
+containerized CrateDB with five
+
+00:03:22.317 --> 00:03:26.450
+CPUs and four gigabytes of heap
+space achieved around 80,000
+
+00:03:26.450 --> 00:03:29.160
+inserts per second, including
+indexing.
+
+00:03:30.440 --> 00:03:34.389
+To conclude, importing data into
+CrateDB requires A thoughtful
+
+00:03:34.389 --> 00:03:38.092
+approach to table creation,
+connection management, and data
+
+00:03:38.092 --> 00:03:39.080
+import strategy.
+
+00:03:39.760 --> 00:03:43.451
+By leveraging CrateDB's full
+text indexing and Dasks parallel
+
+00:03:43.451 --> 00:03:47.083
+processing capabilities, we can
+efficiently import large data
+
+00:03:47.083 --> 00:03:49.720
+sets while optimizing for query
+performance.

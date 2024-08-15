@@ -1,0 +1,391 @@
+﻿WEBVTT
+
+00:00:00.840 --> 00:00:04.482
+Time series applications work
+with real time data in most of
+
+00:00:04.482 --> 00:00:05.080
+the cases.
+
+00:00:05.920 --> 00:00:09.607
+This chapter will provide an
+example how data can be streamed
+
+00:00:09.607 --> 00:00:12.640
+into CrateDB using Apache Kafka
+and Apache Flink.
+
+00:00:13.880 --> 00:00:17.763
+Ingesting time series data in a
+streaming fashion is crucial for
+
+00:00:17.763 --> 00:00:18.720
+several reasons.
+
+00:00:20.080 --> 00:00:23.927
+Firstly, streaming ingestion of
+time series data ensures that
+
+00:00:23.927 --> 00:00:27.465
+the database is always up to
+date, enabling accurate and
+
+00:00:27.465 --> 00:00:28.520
+current insights.
+
+00:00:29.960 --> 00:00:33.248
+Furthermore, it allows for real
+time analysis and decision
+
+00:00:33.248 --> 00:00:36.647
+making, which is particularly
+important for industries where
+
+00:00:36.647 --> 00:00:39.657
+immediate action based on the
+latest data can lead to
+
+00:00:39.657 --> 00:00:42.332
+significant operational
+improvements or prevent
+
+00:00:42.332 --> 00:00:43.279
+potential issues.
+
+00:00:44.640 --> 00:00:47.740
+Lastly, it can efficiently
+handle the high volume and
+
+00:00:47.740 --> 00:00:51.128
+velocity of time series data,
+ensuring that the system can
+
+00:00:51.128 --> 00:00:54.000
+keep up with the data flow and
+prevent data loss.
+
+00:00:56.480 --> 00:00:59.786
+The architecture of the demo is
+designed to handle real time
+
+00:00:59.786 --> 00:01:02.280
+ingestion and processing of time
+series data.
+
+00:01:03.160 --> 00:01:06.335
+It starts by frequently querying
+a weather API through
+
+00:01:06.335 --> 00:01:09.280
+Http://requests to gather the
+latest weather data.
+
+00:01:10.680 --> 00:01:14.628
+This data is then pushed into a
+Kafka topic, serving as a buffer
+
+00:01:14.628 --> 00:01:18.029
+and ensuring no data is lost
+even if there's a spike in
+
+00:01:18.029 --> 00:01:18.880
+incoming data.
+
+00:01:20.280 --> 00:01:24.037
+Then a Flink job is used to
+consume the data from Kafka and
+
+00:01:24.037 --> 00:01:26.480
+incrementally ingest it into
+CrateDB.
+
+00:01:27.840 --> 00:01:31.312
+This architecture enables real
+time data analysis as the data
+
+00:01:31.312 --> 00:01:34.392
+in CrateDB is kept up to date
+with the latest weather
+
+00:01:34.392 --> 00:01:37.752
+conditions and other services
+can read either directly from
+
+00:01:37.752 --> 00:01:39.320
+the stream or from CrateDB.
+
+00:01:41.200 --> 00:01:44.566
+You can find the demo artifacts
+in our GitHub examples
+
+00:01:44.566 --> 00:01:45.240
+repository.
+
+00:01:47.480 --> 00:01:50.287
+In addition to the streaming
+data, these examples
+
+00:01:50.287 --> 00:01:53.655
+demonstrates how easy it is to
+work with Jason data and how
+
+00:01:53.655 --> 00:01:56.630
+CrateDB's flexible schema
+speeds up the development
+
+00:01:56.630 --> 00:01:57.080
+process.
+
+00:01:57.080 --> 00:02:00.372
+A complete Jason record is
+returned from the Weather
+
+00:02:00.372 --> 00:02:04.099
+Service with information about
+the location and the current
+
+00:02:04.099 --> 00:02:05.279
+weather conditions.
+
+00:02:06.200 --> 00:02:10.016
+As the details of both sections
+can change over time, both are
+
+00:02:10.016 --> 00:02:12.440
+created as dynamic objects in
+CrateDB.
+
+00:02:13.360 --> 00:02:16.686
+There is no need for a complex
+schema and type conversions
+
+00:02:16.686 --> 00:02:19.673
+while keeping the ability to
+automatically index all
+
+00:02:19.673 --> 00:02:23.000
+individual attributes for fast
+filtering and aggregations.
+
+00:02:23.880 --> 00:02:27.145
+Without further ado, one can
+create aggregations like the
+
+00:02:27.145 --> 00:02:29.960
+calculation of the average
+temperature in France.
+
+00:02:32.080 --> 00:02:35.320
+Also, the development process
+itself gets much easier.
+
+00:02:36.720 --> 00:02:40.459
+On the producer side, we can
+easily dump the Jason file into
+
+00:02:40.459 --> 00:02:41.440
+the Kafka topic.
+
+00:02:42.360 --> 00:02:46.229
+The Flink schema represents the
+two location and current
+
+00:02:46.229 --> 00:02:50.301
+conditions attributes, both
+represented as strings, that is
+
+00:02:50.301 --> 00:02:54.238
+Jason formatted text with the
+automatic interpretation of
+
+00:02:54.238 --> 00:02:55.800
+Jason text in CrateDB.
+
+00:02:56.120 --> 00:02:59.333
+The actual write into the
+database is executing a simple
+
+00:02:59.333 --> 00:03:02.377
+insert of these two attributes
+based on their textual
+
+00:03:02.377 --> 00:03:03.279
+representations.
+
+00:03:04.120 --> 00:03:07.653
+If new attributes are added to
+location or current, they are
+
+00:03:07.653 --> 00:03:10.897
+automatically added in CrateDB
+as well, including type
+
+00:03:10.897 --> 00:03:14.200
+inference and automatic indexing
+for immediate querying.
+
+00:03:15.760 --> 00:03:18.806
+Let us have a look at the actual
+demonstration of the streaming
+
+00:03:18.806 --> 00:03:19.520
+ingest process.
+
+00:03:19.920 --> 00:03:23.003
+You can find all the resources
+in our CrateDB Examples
+
+00:03:23.003 --> 00:03:24.160
+repository on GitHub.
+
+00:03:25.080 --> 00:03:28.144
+As a first step, please clone
+the repository to your local
+
+00:03:28.144 --> 00:03:28.560
+machine.
+
+00:03:30.120 --> 00:03:33.282
+Once this is done, please change
+into the Apache Kafka Flink
+
+00:03:33.282 --> 00:03:34.320
+streaming directory.
+
+00:03:34.800 --> 00:03:37.436
+It contains a couple of
+resources that we will use to
+
+00:03:37.436 --> 00:03:38.560
+demonstrate the ingest.
+
+00:03:39.840 --> 00:03:43.256
+The NV file contains multiple
+parameters that we need to set
+
+00:03:43.256 --> 00:03:46.000
+before we can start the demo via
+Docker Compose.
+
+00:03:47.400 --> 00:03:50.940
+In order to read the data from
+the Weather API, we need to
+
+00:03:50.940 --> 00:03:52.320
+acquire a free API key.
+
+00:03:52.800 --> 00:03:56.568
+Please visit their website
+weatherapi.com, sign up for a
+
+00:03:56.568 --> 00:03:59.280
+free account and generate a new
+API key.
+
+00:03:59.960 --> 00:04:02.000
+We will copy it into our NV
+file.
+
+00:04:08.800 --> 00:04:12.315
+Furthermore, we configure to
+collect new data every 5 seconds
+
+00:04:12.315 --> 00:04:13.280
+from the service.
+
+00:04:15.640 --> 00:04:19.290
+After saving the configuration
+settings, we start the demo via
+
+00:04:19.290 --> 00:04:20.160
+Docker Compose.
+
+00:04:20.680 --> 00:04:24.815
+It will automatically download
+and start multiple images Kafka
+
+00:04:24.815 --> 00:04:28.884
+and Flink including Zookeeper,
+CrateDB as well as a producer
+
+00:04:28.884 --> 00:04:32.560
+forwarding the results of API
+calls into a Kafka topic.
+
+00:04:34.320 --> 00:04:39.153
+Once the download is complete,
+please open CrateDB's admin UI
+
+00:04:39.153 --> 00:04:42.760
+in your web browser by opening
+localhost 4200.
+
+00:04:43.320 --> 00:04:46.733
+You will find an empty CrateDB
+instance in which we create the
+
+00:04:46.733 --> 00:04:49.240
+previously described table
+Weather data Flink.
+
+00:04:49.800 --> 00:04:52.831
+It contains A generated
+timestamp to identify when a
+
+00:04:52.831 --> 00:04:56.606
+record has been inserted as well
+as the two sections Location and
+
+00:04:56.606 --> 00:05:00.038
+Current Conditions as dynamic
+objects leveraging CrateDB's
+
+00:05:00.038 --> 00:05:01.640
+dynamic schema capabilities.
+
+00:05:02.360 --> 00:05:05.790
+Once the table is created, we
+see that the data from the Kafka
+
+00:05:05.790 --> 00:05:08.240
+topic is written automatically
+to CrateDB.
+
+00:05:08.720 --> 00:05:11.280
+That is, the Flink job is
+running correctly.
+
+00:05:12.160 --> 00:05:15.169
+The first two records that
+existed in the Kafka topic by
+
+00:05:15.169 --> 00:05:17.440
+this time have been inserted
+successfully.
+
+00:05:18.600 --> 00:05:20.400
+Let us have a look at the actual
+data.
+
+00:05:20.800 --> 00:05:24.425
+As we can see, one more row has
+arrived in the meantime and the
+
+00:05:24.425 --> 00:05:28.051
+structure from the web service
+call delivered in JSON has been
+
+00:05:28.051 --> 00:05:31.280
+correctly interpreted and
+inserted into the two objects.
+
+00:05:31.800 --> 00:05:34.756
+We can now use this data for
+further analysis as we
+
+00:05:34.756 --> 00:05:37.940
+demonstrated in the previous
+chapters about efficiently
+
+00:05:37.940 --> 00:05:39.760
+querying JSON data in CrateDB.

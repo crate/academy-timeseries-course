@@ -1,0 +1,390 @@
+﻿WEBVTT
+
+00:00:00.560 --> 00:00:03.600
+Let's dive into how CrateDB
+handles time series.
+
+00:00:04.480 --> 00:00:08.219
+We will show and explain how
+CrateDB helps to query data in
+
+00:00:08.219 --> 00:00:11.714
+milliseconds, leverage the
+simplicity of SQL, combine
+
+00:00:11.714 --> 00:00:15.699
+multiple data types, handle high
+ingest rates and store years of
+
+00:00:15.699 --> 00:00:16.680
+historical data.
+
+00:00:19.640 --> 00:00:23.017
+Weather data will be frequently
+used in our examples as it is
+
+00:00:23.017 --> 00:00:25.960
+easy to comprehend and available
+from public sources.
+
+00:00:26.880 --> 00:00:27.840
+As necessary,
+
+00:00:28.120 --> 00:00:31.396
+we will incorporate other data
+sets to best exhibit the
+
+00:00:31.396 --> 00:00:34.965
+extensive capabilities of CrateDB in managing and analyzing
+
+00:00:34.965 --> 00:00:35.960
+time series data.
+
+00:00:36.840 --> 00:00:40.512
+For most of the examples, we use
+rather small data sets for
+
+00:00:40.512 --> 00:00:41.920
+demonstration purposes.
+
+00:00:42.760 --> 00:00:46.287
+In later sessions we will also
+cover how to work with larger
+
+00:00:46.287 --> 00:00:47.560
+than memory data sets.
+
+00:00:48.960 --> 00:00:52.373
+In this video, we will create a
+data table and populate it with
+
+00:00:52.373 --> 00:00:55.040
+weather readings from locations
+across the globe.
+
+00:00:56.000 --> 00:00:59.383
+Each record includes the exact
+time of the recording, the
+
+00:00:59.383 --> 00:01:02.883
+location of the weather station,
+the temperature in degrees
+
+00:01:02.883 --> 00:01:06.675
+Celsius, the relative humidity,
+and the wind speed in kilometers
+
+00:01:06.675 --> 00:01:07.200
+per hour.
+
+00:01:08.040 --> 00:01:11.494
+We will then showcase the power
+of CrateDB's querying
+
+00:01:11.494 --> 00:01:15.389
+capabilities, from basic data
+extraction to more complex real
+
+00:01:15.389 --> 00:01:16.520
+time aggregations.
+
+00:01:17.400 --> 00:01:20.652
+This will highlight the
+versatility and usability of
+
+00:01:20.652 --> 00:01:24.396
+CrateDB in managing, analyzing
+and extracting insights from
+
+00:01:24.396 --> 00:01:25.440
+time series data.
+
+00:01:26.840 --> 00:01:30.280
+First, let's create the table to
+store the weather data.
+
+00:01:30.560 --> 00:01:33.734
+Create a table with columns
+tailored to the data set using
+
+00:01:33.734 --> 00:01:35.080
+the CREATE TABLE command.
+
+00:01:35.720 --> 00:01:39.218
+Although we are using only a few
+variables here, CrateDB can
+
+00:01:39.218 --> 00:01:42.440
+easily accommodate hundreds of
+columns in a single table.
+
+00:01:43.760 --> 00:01:47.240
+With the table ready, you are
+now set to insert the data set.
+
+00:01:47.960 --> 00:01:51.658
+As the data is available in a
+publicly readable location, you
+
+00:01:51.658 --> 00:01:55.000
+can easily insert it using the
+COPY FROM SQL statement.
+
+00:01:56.280 --> 00:02:00.480
+As you can see, the data set
+only contains 70,000 records.
+
+00:02:00.480 --> 00:02:04.128
+For educational purposes, real
+world data sets are usually much
+
+00:02:04.128 --> 00:02:07.320
+larger and we will demonstrate
+those in later sessions.
+
+00:02:08.000 --> 00:02:10.787
+Now that the data is
+successfully imported, let us
+
+00:02:10.787 --> 00:02:11.880
+start to explore it.
+
+00:02:12.400 --> 00:02:15.597
+We start with a basic SELECT
+statement on all columns and
+
+00:02:15.597 --> 00:02:18.520
+limit the output to display the
+first 10 records only.
+
+00:02:18.960 --> 00:02:21.465
+You see the first values with
+all previously created
+
+00:02:21.465 --> 00:02:22.080
+measurements.
+
+00:02:24.000 --> 00:02:27.494
+CrateDB is built for fast
+aggregations using columnar
+
+00:02:27.494 --> 00:02:31.623
+storage to speed up aggregations
+across large data sets and long
+
+00:02:31.623 --> 00:02:32.640
+periods of time.
+
+00:02:33.320 --> 00:02:35.846
+For example, we want to
+calculate the average
+
+00:02:35.846 --> 00:02:39.305
+temperature for each location by
+using the average aggregation
+
+00:02:39.305 --> 00:02:39.800
+function.
+
+00:02:40.840 --> 00:02:44.333
+Computing basic averages is not
+special, but what if you need to
+
+00:02:44.333 --> 00:02:46.000
+answer more detailed questions?
+
+00:02:46.360 --> 00:02:49.956
+For example, if you want to know
+the highest temperature for each
+
+00:02:49.956 --> 00:02:53.116
+place and when it occurred.
+Simple groupings might not be
+
+00:02:53.116 --> 00:02:56.440
+enough and CrateDB has enhanced
+tools for time series data.
+
+00:02:56.960 --> 00:03:00.950
+You can use the max_by function
+which gives you a value like the
+
+00:03:00.950 --> 00:03:04.880
+time when another value like the
+temperature is at its highest.
+
+00:03:06.080 --> 00:03:07.680
+Let's look at the example query.
+
+00:03:08.080 --> 00:03:11.440
+We now see when the peak in
+temperature occurred for every
+
+00:03:11.440 --> 00:03:14.800
+location together with the
+respective maximum temperature.
+
+00:03:15.280 --> 00:03:18.723
+You have probably observed by
+now that there are gaps in the
+
+00:03:18.723 --> 00:03:20.360
+data set for certain metrics.
+
+00:03:20.880 --> 00:03:24.060
+Such occurrences are common,
+perhaps due to a sensor
+
+00:03:24.060 --> 00:03:25.800
+malfunction or disconnection.
+
+00:03:26.400 --> 00:03:29.440
+To address this, the missing
+values need to be filled in.
+
+00:03:29.960 --> 00:03:33.109
+While there are many ways how to
+deal with missing values, we
+
+00:03:33.109 --> 00:03:36.157
+want to interpolate based on the
+previous and the following
+
+00:03:36.157 --> 00:03:36.920
+non-empty value.
+
+00:03:37.520 --> 00:03:41.203
+You can use another statement of
+CrateDB's SQL window functions
+
+00:03:41.203 --> 00:03:44.376
+paired with the ignore nulls
+feature within a common table
+
+00:03:44.376 --> 00:03:44.999
+expression.
+
+00:03:45.320 --> 00:03:48.799
+We utilize window functions to
+spot the next and prior non null
+
+00:03:48.799 --> 00:03:52.224
+temperature recordings and then
+compute the arithmetic mean to
+
+00:03:52.224 --> 00:03:53.040
+bridge the gap.
+
+00:03:53.800 --> 00:03:56.616
+This query retrieves the missing
+temperature values and
+
+00:03:56.616 --> 00:03:59.784
+interpolates them by averaging
+the previous and next available
+
+00:03:59.784 --> 00:04:00.840
+temperature readings.
+
+00:04:03.160 --> 00:04:06.709
+Let us summarize how CrateDB
+differentiates for time series
+
+00:04:06.709 --> 00:04:07.000
+data.
+
+00:04:08.360 --> 00:04:11.520
+It is a SQL database designed
+for large amounts of data.
+
+00:04:12.400 --> 00:04:16.092
+It offers built in time series
+functionality including window
+
+00:04:16.092 --> 00:04:19.129
+functions and aggregation
+functions which simplify
+
+00:04:19.129 --> 00:04:20.439
+querying and analysis.
+
+00:04:21.320 --> 00:04:25.357
+Functions such as lead, lag and
+date bin as well as joins allow
+
+00:04:25.357 --> 00:04:29.268
+for advanced data handling and
+will be discussed in detail in
+
+00:04:29.268 --> 00:04:30.720
+the following sessions.
+
+00:04:31.840 --> 00:04:36.332
+Beyond time series data, CrateDB
+supports various data types
+
+00:04:36.332 --> 00:04:40.318
+including structured,
+unstructured, JSON, geospatial,
+
+00:04:40.318 --> 00:04:41.839
+BLOB and vector data.
+
+00:04:42.720 --> 00:04:46.492
+Its columnar storage format is
+efficient for time series data,
+
+00:04:46.492 --> 00:04:49.905
+enabling complex ad hoc
+aggregations within milliseconds
+
+00:04:49.905 --> 00:04:52.360
+across millions and billions of
+records.
+
+00:04:53.440 --> 00:04:56.166
+The robust time based
+partitioning and charting
+
+00:04:56.166 --> 00:04:59.289
+enables high cardinality without
+the need for data
+
+00:04:59.289 --> 00:05:00.880
+preaggregation or downsampling.
+
+00:05:01.520 --> 00:05:04.454
+CrateDB's distributed
+architecture enables high
+
+00:05:04.454 --> 00:05:07.987
+availability and horizontal
+scaling across multiple nodes,
+
+00:05:07.987 --> 00:05:11.760
+ideal for handling large volumes
+of data from diverse sources.
+
+00:05:12.640 --> 00:05:16.944
+It also supports data tiering,
+allowing for cost efficient long
+
+00:05:16.944 --> 00:05:21.115
+term data storage, integration
+with popular data visualization
+
+00:05:21.115 --> 00:05:24.824
+tools and compatibility with
+Java and Python ecosystems
+
+00:05:24.824 --> 00:05:28.400
+facilitate efficient data
+analysis and visualization.
+
+00:05:29.760 --> 00:05:33.366
+As an open source solution,
+CrateDB offers cost effective
+
+00:05:33.366 --> 00:05:36.240
+licensing and an active
+community for support.

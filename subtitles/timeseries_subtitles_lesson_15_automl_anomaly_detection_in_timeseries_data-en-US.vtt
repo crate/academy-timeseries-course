@@ -1,0 +1,346 @@
+﻿WEBVTT
+
+00:00:00.760 --> 00:00:04.344
+Anomaly detection in time series
+data involves identifying
+
+00:00:04.344 --> 00:00:08.051
+unusual patterns or outliers
+that deviate significantly from
+
+00:00:08.051 --> 00:00:10.360
+the norm within a data set over
+time.
+
+00:00:11.720 --> 00:00:15.329
+This video explores how anomaly
+detection in time series data
+
+00:00:15.329 --> 00:00:18.647
+stored in CrateDB can be
+efficiently executed using PyCaret
+
+00:00:18.647 --> 00:00:21.849
+by leveraging its simple
+and efficient setup to
+
+00:00:21.849 --> 00:00:24.760
+automatically train and evaluate
+multiple models.
+
+00:00:26.760 --> 00:00:30.151
+In this Jupyter notebook, we
+explore the integration of CrateDB
+
+00:00:30.151 --> 00:00:33.160
+and PyCaret for anomaly
+detection in machine data.
+
+00:00:33.920 --> 00:00:37.293
+Our focus is on leveraging the
+strengths of both tools, CrateDB's
+
+00:00:37.293 --> 00:00:40.176
+ability to manage large
+scale data sets, and
+
+00:00:40.176 --> 00:00:43.441
+PyCaret's streamlined approach
+to applying machine learning
+
+00:00:43.441 --> 00:00:44.039
+techniques.
+
+00:00:44.760 --> 00:00:47.928
+We will rely on the Numenta
+Anomaly benchmark data set,
+
+00:00:47.928 --> 00:00:50.933
+specifically temperature
+readings from a machine room,
+
+00:00:50.933 --> 00:00:54.374
+and demonstrate how to extract
+data from CrateDB and apply
+
+00:00:54.374 --> 00:00:56.560
+PyCaret's anomaly detection
+algorithms.
+
+00:00:57.400 --> 00:01:00.335
+The objective is to detect
+anomalies that could indicate
+
+00:01:00.335 --> 00:01:03.631
+equipment malfunctions using a
+practical example that simulates
+
+00:01:03.631 --> 00:01:05.280
+real world machine measurements.
+
+00:01:07.920 --> 00:01:11.187
+As a first step, you need to
+install the necessary
+
+00:01:11.187 --> 00:01:15.030
+dependencies by running the
+provided pip install command in
+
+00:01:15.030 --> 00:01:16.440
+your Jupyter notebook.
+
+00:01:17.320 --> 00:01:20.625
+For those using a cloud
+environment like Google Collab,
+
+00:01:20.625 --> 00:01:24.344
+remember to specify the absolute
+path to the requirements text
+
+00:01:24.344 --> 00:01:24.640
+file.
+
+00:01:25.880 --> 00:01:28.850
+Once the installation is
+complete, we need to import the
+
+00:01:28.850 --> 00:01:29.840
+required libraries.
+
+00:01:30.280 --> 00:01:34.139
+These include pandas for data
+manipulation, SQLAlchemy for
+
+00:01:34.139 --> 00:01:37.998
+interacting with CrateDB, 
+PyCaret for anomaly detection,
+
+00:01:37.998 --> 00:01:42.115
+and various plotting libraries
+for visualization such as Plotly
+
+00:01:42.115 --> 00:01:43.080
+and Matplotlib.
+
+00:01:44.400 --> 00:01:47.624
+Before writing data to CrateDB,
+you'll need to adjust the
+
+00:01:47.624 --> 00:01:50.904
+connection string variable to
+match your CrateDB instances
+
+00:01:50.904 --> 00:01:51.560
+credentials.
+
+00:01:52.600 --> 00:01:56.080
+The provided code assumes a
+local CrateDB setup but can be
+
+00:01:56.080 --> 00:01:59.560
+easily adapted for CrateDB
+Cloud or other configurations.
+
+00:02:02.800 --> 00:02:06.441
+We will import the data into
+CrateDB and once the data set
+
+00:02:06.441 --> 00:02:09.962
+is successfully loaded into
+CrateDB, the next step is to
+
+00:02:09.962 --> 00:02:13.907
+access and aggregate the data in
+a way that is most suitable for
+
+00:02:13.907 --> 00:02:14.999
+anomaly detection.
+
+00:02:15.440 --> 00:02:19.010
+Our focus will be on processing
+the data into evenly spaced time
+
+00:02:19.010 --> 00:02:19.560
+intervals.
+
+00:02:20.360 --> 00:02:24.202
+We use CrateDB's DATE_BIN
+function to group data into 5
+
+00:02:24.202 --> 00:02:28.113
+minute buckets, calculating the
+average value within each
+
+00:02:28.113 --> 00:02:28.720
+interval.
+
+00:02:29.280 --> 00:02:33.141
+Furthermore, the timestamp is
+converted into Python date time
+
+00:02:33.141 --> 00:02:33.640
+objects.
+
+00:02:34.840 --> 00:02:37.889
+To better understand the
+characteristics of our time
+
+00:02:37.889 --> 00:02:41.628
+series data set and identify any
+apparent anomalies, we create a
+
+00:02:41.628 --> 00:02:44.160
+plot of the temperature readings
+over time.
+
+00:02:44.680 --> 00:02:47.583
+We also took record of the
+periods where anomalies were
+
+00:02:47.583 --> 00:02:48.880
+observed on the machines.
+
+00:02:49.520 --> 00:02:53.375
+The anomalies represented as
+blue shaded areas in our plot
+
+00:02:53.375 --> 00:02:56.904
+include periods of planned
+shutdowns and instances of
+
+00:02:56.904 --> 00:02:58.800
+catastrophic machine failure.
+
+00:02:59.320 --> 00:03:01.680
+We will use them later to
+evaluate the model.
+
+00:03:02.120 --> 00:03:05.482
+You can also see that there are
+some unusual spikes in the data
+
+00:03:05.482 --> 00:03:08.477
+which make anomalies hard to
+differentiate from ordinary
+
+00:03:08.477 --> 00:03:09.160
+measurements.
+
+00:03:10.760 --> 00:03:13.788
+In the next step, we initialize
+the environment for the machine
+
+00:03:13.788 --> 00:03:14.640
+learning workflow.
+
+00:03:15.160 --> 00:03:17.866
+This is easily done in PyCaret
+by creating the
+
+00:03:17.866 --> 00:03:21.385
+transformation pipeline with the
+setup function and specifying a
+
+00:03:21.385 --> 00:03:23.280
+session ID for tracing of
+results.
+
+00:03:24.480 --> 00:03:27.907
+Inspecting the available models
+via the models function reveals
+
+00:03:27.907 --> 00:03:30.800
+a variety of algorithms suited
+for anomaly detection.
+
+00:03:31.560 --> 00:03:35.517
+For our purposes, we select the
+minimum covariance, determinant,
+
+00:03:35.517 --> 00:03:39.292
+(or short MCD) model known for its
+effectiveness in identifying
+
+00:03:39.292 --> 00:03:39.840
+outliers.
+
+00:03:40.600 --> 00:03:44.301
+We use the create model function
+to instantiate and train an MCD
+
+00:03:44.301 --> 00:03:47.432
+model, adjusting the fraction
+parameter to specify the
+
+00:03:47.432 --> 00:03:50.280
+proportion of outliers we expect
+in the data set.
+
+00:03:50.960 --> 00:03:54.203
+After training, we apply the
+model to our data set to label
+
+00:03:54.203 --> 00:03:54.960
+the anomalies.
+
+00:03:55.480 --> 00:03:58.487
+The assign model function
+enriches our data frame with
+
+00:03:58.487 --> 00:04:01.713
+anomaly labels and scores,
+facilitating the identification
+
+00:04:01.713 --> 00:04:03.080
+of anomalous data points.
+
+00:04:04.320 --> 00:04:07.814
+Finally, we visually assess the
+effectiveness of our anomaly
+
+00:04:07.814 --> 00:04:11.480
+detection model by plotting the
+temperature readings over time.
+
+00:04:12.760 --> 00:04:16.120
+The red spots correspond to the
+anomalies flagged by the model.
+
+00:04:16.840 --> 00:04:20.265
+This visualization enables a
+direct comparison between the
+
+00:04:20.265 --> 00:04:23.864
+anomalies detected by the model
+and those initially observed,
+
+00:04:23.864 --> 00:04:27.173
+offering insights into the
+models accuracy and potential
+
+00:04:27.173 --> 00:04:28.160
+areas for tuning.
+
+00:04:29.400 --> 00:04:32.711
+Our exploration emphasizes the
+potential for advanced analytics
+
+00:04:32.711 --> 00:04:35.040
+in monitoring and maintaining
+system health.
+
+00:04:36.320 --> 00:04:39.805
+With the demonstrated approach,
+we can easily create insights
+
+00:04:39.805 --> 00:04:43.235
+into machine data and detect
+anomalies with just a few lines
+
+00:04:43.235 --> 00:04:46.383
+of code, enabling developers to
+create new insights and
+
+00:04:46.383 --> 00:04:48.520
+applications within just a few
+hours.

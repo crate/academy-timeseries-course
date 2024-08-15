@@ -1,0 +1,528 @@
+﻿WEBVTT
+
+00:00:00.320 --> 00:00:03.627
+Exploratory data analysis is a
+critical step in the data
+
+00:00:03.627 --> 00:00:06.413
+science process aimed at
+understanding the main
+
+00:00:06.413 --> 00:00:09.721
+characteristics of a data set
+through visualizations and
+
+00:00:09.721 --> 00:00:10.360
+statistics.
+
+00:00:11.240 --> 00:00:14.211
+In this video, we will
+illustrate how to perform
+
+00:00:14.211 --> 00:00:17.971
+exploratory data analysis using
+Python libraries to visualize
+
+00:00:17.971 --> 00:00:20.640
+and understand the data stored
+in CrateDB.
+
+00:00:22.160 --> 00:00:25.912
+Exploratory data analysis is an
+approach to analyze data sets
+
+00:00:25.912 --> 00:00:29.120
+with various statistical methods
+and visualizations.
+
+00:00:30.000 --> 00:00:33.256
+This isn't just about making
+calculations or plotting charts,
+
+00:00:33.256 --> 00:00:36.040
+it's a thorough process of
+getting to know the data.
+
+00:00:36.880 --> 00:00:40.154
+We look for patterns and trends
+that give us insights into how
+
+00:00:40.154 --> 00:00:43.377
+our variables relate to each
+other, and we seek to understand
+
+00:00:43.377 --> 00:00:45.560
+the underlying structure of the
+data set.
+
+00:00:46.440 --> 00:00:49.605
+It's also crucial that we
+identify any deviations from
+
+00:00:49.605 --> 00:00:53.347
+expected trends, which could be
+anomalies or outliers that might
+
+00:00:53.347 --> 00:00:56.513
+indicate errors or unique
+significant occurrences that
+
+00:00:56.513 --> 00:00:58.240
+warrant further investigation.
+
+00:00:59.160 --> 00:01:03.552
+Alongside numerical analysis,
+visualization is a powerful tool
+
+00:01:03.552 --> 00:01:04.040
+in EDA.
+
+00:01:05.240 --> 00:01:08.967
+Through charts, graphs, and
+plots, we make complex data more
+
+00:01:08.967 --> 00:01:10.800
+accessible and understandable.
+
+00:01:11.880 --> 00:01:15.658
+In this notebook, we explore
+weather data using the PyCaret
+
+00:01:15.658 --> 00:01:19.757
+library, an open source machine
+learning library in Python that
+
+00:01:19.757 --> 00:01:23.600
+significantly reduces the time
+from hypothesis to insights.
+
+00:01:24.360 --> 00:01:27.867
+PyCaret stands out with its low
+code approach, providing an
+
+00:01:27.867 --> 00:01:31.316
+efficient end to end machine
+learning pipeline that's easy
+
+00:01:31.316 --> 00:01:34.240
+for beginners and robust enough
+for expert users.
+
+00:01:35.000 --> 00:01:39.215
+PyCaret coupled with CrateDB
+is a powerful duo for handling
+
+00:01:39.215 --> 00:01:42.160
+large scale data analytics and
+ML projects.
+
+00:01:42.840 --> 00:01:46.243
+CrateDB excels in real time
+handling of massive amounts of
+
+00:01:46.243 --> 00:01:49.760
+data, while PyCaret applies
+its machine learning algorithms
+
+00:01:49.760 --> 00:01:52.880
+directly to this data for an
+array of analytics tasks.
+
+00:01:53.720 --> 00:01:56.996
+The journey through this
+notebook will take us through
+
+00:01:56.996 --> 00:02:00.689
+data extraction from CrateDB,
+preprocessing with PyCaret,
+
+00:02:00.689 --> 00:02:03.966
+and visualization to understand
+data distributions and
+
+00:02:03.966 --> 00:02:04.800
+relationships.
+
+00:02:06.240 --> 00:02:09.792
+We start by setting up our
+environment, connecting to CrateDB
+
+00:02:09.792 --> 00:02:12.160
+and preparing our data for
+analysis.
+
+00:02:12.720 --> 00:02:16.308
+All necessary dependencies are
+located in the requirements text
+
+00:02:16.308 --> 00:02:19.840
+file and they can be installed
+by running pip install command.
+
+00:02:20.440 --> 00:02:23.667
+If you are running this notebook
+in an environment like Google
+
+00:02:23.667 --> 00:02:26.280
+Collab, use the absolute path as
+illustrated here.
+
+00:02:27.080 --> 00:02:31.075
+As a first step, we are looking
+into connecting to a CrateDB
+
+00:02:31.075 --> 00:02:35.006
+instance using SQL Alchemy, a
+popular SQL toolkit and object
+
+00:02:35.006 --> 00:02:37.520
+relational mapping library for
+Python.
+
+00:02:38.280 --> 00:02:41.412
+Firstly, we establish a
+connection string and we can
+
+00:02:41.412 --> 00:02:44.898
+have two scenarios, one for
+connecting to a local CrateDB
+
+00:02:44.898 --> 00:02:48.326
+instance, which is often used
+for development and testing
+
+00:02:48.326 --> 00:02:51.694
+purposes, and another for
+connecting to a CrateDB cloud
+
+00:02:51.694 --> 00:02:54.827
+instance, which is typically
+utilized for production
+
+00:02:54.827 --> 00:02:56.599
+databases hosted in the cloud.
+
+00:02:57.800 --> 00:03:01.087
+Once the connection string is
+defined, we create an engine
+
+00:03:01.087 --> 00:03:02.480
+object in SQLAlchemy.
+
+00:03:02.920 --> 00:03:05.914
+It's a common interface to the
+database that we are querying
+
+00:03:05.914 --> 00:03:06.160
+from.
+
+00:03:06.560 --> 00:03:09.861
+The following code demonstrates
+fetching data from the CrateDB
+
+00:03:09.861 --> 00:03:12.440
+instance and loading it into a
+pandas data frame.
+
+00:03:12.880 --> 00:03:15.838
+We execute a simple SQL query
+to select all records from
+
+00:03:15.838 --> 00:03:16.480
+weather data.
+
+00:03:18.400 --> 00:03:22.152
+After successfully fetching the
+data, we use df.head(5) to
+
+00:03:22.152 --> 00:03:25.720
+preview the first 5 rows of our
+data frame in our data set.
+
+00:03:26.080 --> 00:03:29.472
+The timestamp column is crucial
+as it holds the key to time
+
+00:03:29.472 --> 00:03:30.320
+based analysis.
+
+00:03:30.800 --> 00:03:34.358
+It is stored as a big integer
+value that isn't automatically
+
+00:03:34.358 --> 00:03:36.400
+recognized as date time by
+pandas.
+
+00:03:36.920 --> 00:03:40.564
+We use the to_date time function
+from pandas which converts the
+
+00:03:40.564 --> 00:03:44.152
+timestamp column into datetime
+object which pandas and Python
+
+00:03:44.152 --> 00:03:47.000
+can understand and manipulate as
+time based data.
+
+00:03:47.720 --> 00:03:51.601
+Once the conversion is complete,
+we take this time stamp column
+
+00:03:51.601 --> 00:03:55.240
+and set it as the index of our
+data frame as it unlocks the
+
+00:03:55.240 --> 00:03:58.697
+potential to resample the data
+based on periods, compute,
+
+00:03:58.697 --> 00:04:00.760
+rolling statistics and much
+more.
+
+00:04:01.320 --> 00:04:04.428
+It's an essential step in
+preparing our data for time
+
+00:04:04.428 --> 00:04:07.480
+series forecasting or any kind
+of temporal analysis.
+
+00:04:09.400 --> 00:04:13.219
+In time series data sets like
+weather records, it's common to
+
+00:04:13.219 --> 00:04:14.760
+encounter missing values.
+
+00:04:15.160 --> 00:04:18.621
+Here we implement time weighted
+interpolation to estimate
+
+00:04:18.621 --> 00:04:21.844
+missing values in our
+temperature, humidity, and wind
+
+00:04:21.844 --> 00:04:22.680
+speed columns.
+
+00:04:23.440 --> 00:04:27.189
+Interpolation is a statistical
+method used to estimate unknown
+
+00:04:27.189 --> 00:04:30.760
+values that fall within the
+range of a set of known values.
+
+00:04:31.400 --> 00:04:34.706
+By specifying the method as
+time, we instruct pandas to
+
+00:04:34.706 --> 00:04:36.360
+consider the time dimension.
+
+00:04:36.960 --> 00:04:40.067
+This means that the estimated
+values for missing data points
+
+00:04:40.067 --> 00:04:43.073
+will be calculated with the
+linear time difference between
+
+00:04:43.073 --> 00:04:46.080
+the known points using the date
+time index as a reference.
+
+00:04:48.720 --> 00:04:51.805
+Before setting up the
+environment for the analysis, we
+
+00:04:51.805 --> 00:04:53.600
+do the final preprocessing step.
+
+00:04:54.240 --> 00:04:58.180
+This piece of code extracts the
+data for a specific city, Berlin
+
+00:04:58.180 --> 00:05:01.938
+in our case, calculates daily
+averages and organizes the data
+
+00:05:01.938 --> 00:05:05.151
+frame with a timestamp index for
+further analysis or
+
+00:05:05.151 --> 00:05:06.000
+visualization.
+
+00:05:08.360 --> 00:05:11.694
+Now we initialize our
+forecasting environment using
+
+00:05:11.694 --> 00:05:12.400
+PyCaret.
+
+00:05:12.920 --> 00:05:16.533
+We start by defining the
+forecast horizon which is set to
+
+00:05:16.533 --> 00:05:16.720
+10.
+
+00:05:17.360 --> 00:05:21.328
+This parameter is crucial as it
+tells our model how far into the
+
+00:05:21.328 --> 00:05:24.320
+future we want to predict, in
+this case 10 days.
+
+00:05:24.880 --> 00:05:28.776
+Next, we specify fold as 3
+which indicates that we will be
+
+00:05:28.776 --> 00:05:31.560
+using a 3-fold cross
+validation process.
+
+00:05:32.320 --> 00:05:36.174
+TSForecastingExperiment object
+serves as a primary tool for
+
+00:05:36.174 --> 00:05:37.480
+time series analysis.
+
+00:05:38.000 --> 00:05:41.212
+To the setup method, we also
+pass the target variable, which
+
+00:05:41.212 --> 00:05:44.320
+is temperature and a list of
+seasonal periods to consider.
+
+00:05:45.000 --> 00:05:48.916
+The seasonal periods parameter
+is a list containing 1, 5 and 20,
+
+00:05:48.916 --> 00:05:52.894
+which are the cycle lengths we
+hypothesize might be inherent in
+
+00:05:52.894 --> 00:05:54.200
+the temperature data.
+
+00:05:55.600 --> 00:05:58.750
+After running this code, we can
+observe a table with a summary
+
+00:05:58.750 --> 00:06:01.500
+of the settings and many
+findings from the time series
+
+00:06:01.500 --> 00:06:02.400
+forecasting setup.
+
+00:06:03.160 --> 00:06:06.683
+We won't go into details here,
+but it is worth mentioning that
+
+00:06:06.683 --> 00:06:09.760
+the model reports possible
+seasonality for five and 20
+
+00:06:09.760 -->  00:06:10.640
+days options
+
+00:06:11.680 --> 00:06:15.268
+By calling plot Model function,
+we are instructing PyCaret to
+
+00:06:15.268 --> 00:06:16.600
+plot the original data.
+
+00:06:17.160 --> 00:06:20.040
+It's an interactive plot
+allowing us to select a
+
+00:06:20.040 --> 00:06:23.451
+particular area on the graph and
+expand further at a more
+
+00:06:23.451 --> 00:06:26.920
+granular level than what we can
+initially see in the plot.
+
+00:06:28.160 --> 00:06:31.840
+PyCaret comes with a variety of
+tools and visualization options.
+
+00:06:32.400 --> 00:06:35.467
+The next snippet tells us how to
+generate the autocorrelation
+
+00:06:35.467 --> 00:06:36.160
+function plot.
+
+00:06:36.640 --> 00:06:39.747
+It is a tool used to visualize
+how the data points in a time
+
+00:06:39.747 --> 00:06:41.480
+series are related to each
+other.
+
+00:06:42.000 --> 00:06:44.819
+For our example, the graph
+indicates that there is a
+
+00:06:44.819 --> 00:06:48.063
+stronger correlation between
+recent weather temperatures and
+
+00:06:48.063 --> 00:06:51.521
+today's temperature compared to
+temperatures measured further in
+
+00:06:51.521 --> 00:06:52.000
+the past.
+
+00:06:52.760 --> 00:06:56.237
+Finally, PyCaret offers an
+easy way to plot all these
+
+00:06:56.237 --> 00:06:59.960
+graphs in a single multi plot by
+using the diagnostics plot.
+
+00:07:00.720 --> 00:07:05.258
+The diagnostics also include
+periodogram, histogram, QQ plot,
+
+00:07:05.258 --> 00:07:08.480
+and partial autocorrelation
+function plots.
+
+00:07:09.000 --> 00:07:12.702
+From these plots, we can further
+learn the distribution of our
+
+00:07:12.702 --> 00:07:14.760
+data frequencies and
+correlations.
+
+00:07:16.000 --> 00:07:19.301
+With this overview, you are
+equipped to perform your EDA on
+
+00:07:19.301 --> 00:07:22.657
+time series data, leverage the
+integrations between PyCaret
+
+00:07:22.657 --> 00:07:26.234
+and CrateDB, and be on your way
+to drawing insightful forecasts
+
+00:07:26.234 --> 00:07:27.280
+from your datasets.

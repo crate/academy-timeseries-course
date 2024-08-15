@@ -1,0 +1,676 @@
+﻿WEBVTT
+
+00:00:00.200 --> 00:00:03.532
+Managing the life cycle of data
+is crucial for maintaining
+
+00:00:03.532 --> 00:00:06.865
+performance and controlling
+storage costs, especially when
+
+00:00:06.865 --> 00:00:08.560
+dealing with time series data.
+
+00:00:09.440 --> 00:00:13.357
+With CrateDB, you can design a
+flexible approach to handle data
+
+00:00:13.357 --> 00:00:13.960
+retention.
+
+00:00:14.800 --> 00:00:19.109
+Policies can be configured to
+manage data based on age, size,
+
+00:00:19.109 --> 00:00:20.360
+or other criteria.
+
+00:00:21.240 --> 00:00:24.591
+This ensures that your database
+remains optimized and cost
+
+00:00:24.591 --> 00:00:25.160
+effective.
+
+00:00:27.720 --> 00:00:30.875
+One of the features that makes
+CrateDB robust for handling
+
+00:00:30.875 --> 00:00:33.720
+large data sets is its support
+for table partitioning.
+
+00:00:34.440 --> 00:00:36.040
+Let's take a look at the code
+snippet.
+
+00:00:36.760 --> 00:00:41.050
+We're creating a table called t1
+with two columns, name and
+
+00:00:41.050 --> 00:00:41.480
+month.
+
+00:00:42.240 --> 00:00:45.229
+As described in an earlier
+session, we are using the
+
+00:00:45.229 --> 00:00:48.613
+partitioned by month clause to
+split the data into separate
+
+00:00:48.613 --> 00:00:50.080
+partitions for each month.
+
+00:00:50.800 --> 00:00:54.101
+This partitioning strategy is
+particularly useful for time
+
+00:00:54.101 --> 00:00:57.794
+series data, where you can query
+and manage data more efficiently
+
+00:00:57.794 --> 00:01:00.480
+by working with smaller, more
+relevant subsets.
+
+00:01:01.760 --> 00:01:05.034
+When we insert data into t1, as
+shown in the INSERT INTO
+
+00:01:05.034 --> 00:01:08.481
+statement, new partitions are
+automatically created for new
+
+00:01:08.481 --> 00:01:10.320
+months on the first data ingest.
+
+00:01:11.080 --> 00:01:14.586
+Moreover, when it's time to
+remove old data, as demonstrated
+
+00:01:14.586 --> 00:01:18.035
+by the DELETE FROM statement, we
+can drop entire partitions
+
+00:01:18.035 --> 00:01:20.680
+without the costly process of
+index rebuilds.
+
+00:01:21.440 --> 00:01:24.180
+This makes it very easy to
+manage historical data and
+
+00:01:24.180 --> 00:01:26.920
+ensures that our database
+remains fast and efficient.
+
+00:01:27.640 --> 00:01:31.337
+By partitioning data, you can
+strategically remove outdated or
+
+00:01:31.337 --> 00:01:34.565
+irrelevant data without
+affecting the rest of the data
+
+00:01:34.565 --> 00:01:34.800
+set.
+
+00:01:35.480 --> 00:01:38.817
+This helps in reducing storage
+costs since you only retain the
+
+00:01:38.817 --> 00:01:41.360
+data that is necessary for your
+business needs.
+
+00:01:41.920 --> 00:01:45.023
+Now let's take a look at how to
+define a retention policy to
+
+00:01:45.023 --> 00:01:47.160
+automate the process of purging
+old data.
+
+00:01:48.760 --> 00:01:52.443
+CrateDB can operate on a
+cluster with a mix of nodes that
+
+00:01:52.443 --> 00:01:56.313
+have different storage types,
+such as hot for frequent access
+
+00:01:56.313 --> 00:01:59.560
+and cold storage for less
+frequently accessed data.
+
+00:02:00.440 --> 00:02:03.708
+To define a node's storage type
+within the cluster, you can use
+
+00:02:03.708 --> 00:02:06.160
+node attribute storage attribute
+for each node.
+
+00:02:07.040 --> 00:02:10.482
+Retention policies in general
+requires the use of partition
+
+00:02:10.482 --> 00:02:14.040
+tables, which facilitate faster
+data printing and management.
+
+00:02:15.400 --> 00:02:18.893
+In this example, the Retention
+Policies table illustrates how
+
+00:02:18.893 --> 00:02:22.218
+to define retention policies
+that will be later applied in
+
+00:02:22.218 --> 00:02:25.149
+the CrateDB cluster by
+orchestration or automation
+
+00:02:25.149 --> 00:02:25.600
+tooling.
+
+00:02:26.440 --> 00:02:30.512
+Inside this table, we keep the
+information about: table schema,
+
+00:02:30.512 --> 00:02:34.520
+which is the schema name of the
+table, typically doc for the
+
+00:02:34.520 --> 00:02:38.205
+default schema. table_name,
+denoting the name of the table
+
+00:02:38.205 --> 00:02:40.920
+to which the retention policy
+will apply.
+
+00:02:42.320 --> 00:02:45.440
+partition_column or the column
+used to partition the table.
+
+00:02:46.280 --> 00:02:50.560
+In our example, it is the month
+retention.
+
+00:02:50.760 --> 00:02:53.920
+Which specifies the period for
+which data should be retained.
+
+00:02:55.360 --> 00:02:59.243
+The strategy column allows for
+multiple policies once the data
+
+00:02:59.243 --> 00:03:00.600
+exceeds the retention.
+
+00:03:01.520 --> 00:03:04.563
+One policy can be the
+reallocation of data to another
+
+00:03:04.563 --> 00:03:06.480
+node or a complete data
+deletion.
+
+00:03:07.840 --> 00:03:11.232
+The INSERT statement shows a
+policy for the t1 table in the
+
+00:03:11.232 --> 00:03:14.851
+default doc schema, where data
+is partitioned by month and data
+
+00:03:14.851 --> 00:03:18.131
+older than three months will be
+subject to the reallocate
+
+00:03:18.131 --> 00:03:18.640
+strategy.
+
+00:03:19.440 --> 00:03:22.678
+This means that data will be
+moved after three months within
+
+00:03:22.678 --> 00:03:25.280
+the cluster, typically from hot
+to cold storage.
+
+00:03:26.680 --> 00:03:30.275
+In the next examples, we will
+see how these retention policies
+
+00:03:30.275 --> 00:03:31.360
+can be implemented.
+
+00:03:33.720 --> 00:03:36.753
+The first statement shows how to
+configure a partition on hot
+
+00:03:36.753 --> 00:03:38.760
+nodes and later move it to cold
+storage.
+
+00:03:39.320 --> 00:03:42.809
+As the example suggests, the
+created table is partitioned by
+
+00:03:42.809 --> 00:03:46.013
+the MONTH column and the WITH
+clause specifies that new
+
+00:03:46.013 --> 00:03:49.159
+partitions should be stored on
+nodes with hot storage.
+
+00:03:49.760 --> 00:03:52.995
+Hot storage is typically used
+for data that is accessed
+
+00:03:52.995 --> 00:03:56.000
+frequently and requires fast
+read write operations.
+
+00:03:56.560 --> 00:04:00.139
+To relocate affected partitions
+to cold nodes, one should use
+
+00:04:00.139 --> 00:04:01.640
+the ALTER TABLE statement.
+
+00:04:02.120 --> 00:04:05.169
+The PARTITION clause identifies
+the partition to be altered
+
+00:04:05.169 --> 00:04:06.440
+based on the month value.
+
+00:04:06.840 --> 00:04:10.449
+Finally, the SET clause updates
+the routing for the specified
+
+00:04:10.449 --> 00:04:14.001
+partition, directing it to nodes
+with cold storage using the
+
+00:04:14.001 --> 00:04:17.320
+setting routing.allcoation.require.storage
+= 'cold'.
+
+00:04:18.000 --> 00:04:21.206
+Cold storage is used for less
+frequently accessed data, which
+
+00:04:21.206 --> 00:04:23.120
+can be stored more cost
+effectively.
+
+00:04:23.720 --> 00:04:27.207
+CrateDB's cluster automatically
+initiates the relocation of the
+
+00:04:27.207 --> 00:04:28.280
+affected partitions.
+
+00:04:28.480 --> 00:04:31.986
+Once the settings are altered,
+partitions are seamlessly moved
+
+00:04:31.986 --> 00:04:34.880
+to a node that fulfills the
+specified requirements.
+
+00:04:35.640 --> 00:04:38.904
+Optionally, once the data has
+reached the end of its
+
+00:04:38.904 --> 00:04:39.520
+retention
+
+00:04:39.760 --> 00:04:40.880
+and is no longer needed.
+
+00:04:41.280 --> 00:04:44.107
+The DELETE FROM statement is
+used to remove data from the
+
+00:04:44.107 --> 00:04:44.400
+table.
+
+00:04:45.200 --> 00:04:48.521
+The combination of partition
+tables and retention strategies
+
+00:04:48.521 --> 00:04:51.680
+in CrateDB enables efficient
+data life cycle management.
+
+00:04:52.240 --> 00:04:55.790
+By assigning partitions to hot
+or cold nodes and setting up
+
+00:04:55.790 --> 00:04:59.459
+automatic deletion, CrateDB
+users can optimize their cluster
+
+00:04:59.459 --> 00:05:00.880
+storage and performance.
+
+00:05:02.440 --> 00:05:05.800
+Backup snapshots can be used to
+archive old partitions.
+
+00:05:06.640 --> 00:05:10.218
+Snapshots capture the state of a
+table or a series of tables at
+
+00:05:10.218 --> 00:05:12.120
+the precise moment it is
+created.
+
+00:05:13.040 --> 00:05:16.384
+Each partition can be backed up
+and restored individually if
+
+00:05:16.384 --> 00:05:19.783
+needed and therefore enables
+another instrument how to handle
+
+00:05:19.783 --> 00:05:23.181
+historical data that must be
+retained but does not need to be
+
+00:05:23.181 --> 00:05:25.320
+available in the hot or warm
+database.
+
+00:05:26.200 --> 00:05:29.289
+Snapshots are stored in
+so-called repositories which
+
+00:05:29.289 --> 00:05:31.680
+function as storage containers
+for them.
+
+00:05:33.080 --> 00:05:37.136
+A repository is configured with
+a specific storage back end,
+
+00:05:37.136 --> 00:05:40.860
+which could be Amazon S3,
+Microsoft Azure BLOB Storage,
+
+00:05:40.860 --> 00:05:43.920
+Google Cloud Storage, or a local
+file system.
+
+00:05:44.760 --> 00:05:48.160
+The selection of the back end
+dictates the method and location
+
+00:05:48.160 --> 00:05:49.240
+of snapshot storage.
+
+00:05:50.120 --> 00:05:54.460
+For instance, when utilizing S3,
+the snapshots are preserved as
+
+00:05:54.460 --> 00:05:56.360
+objects within an S3 bucket.
+
+00:05:57.760 --> 00:06:01.693
+To establish a repository for
+storing snapshots in an S3 back
+
+00:06:01.693 --> 00:06:05.309
+end, one would employ the CREATE
+REPOSITORY statement in
+
+00:06:05.309 --> 00:06:05.880
+CrateDB.
+
+00:06:07.000 --> 00:06:11.350
+In our given example, we create
+a repository named export_cold
+
+00:06:11.350 --> 00:06:14.320
+and we utilize S3 as the storage
+back end.
+
+00:06:15.160 --> 00:06:18.783
+The WITH clause encompasses all
+the requisite configuration
+
+00:06:18.783 --> 00:06:22.221
+details such as protocol,
+endpoint, access credentials,
+
+00:06:22.221 --> 00:06:23.880
+and the name of the bucket.
+
+00:06:25.320 --> 00:06:28.695
+Upon the creation of the
+repository, you can proceed to
+
+00:06:28.695 --> 00:06:29.720
+create snapshots.
+
+00:06:30.640 --> 00:06:34.201
+A snapshot is generated with the
+CREATE SNAPSHOT statement that
+
+00:06:34.201 --> 00:06:37.040
+stipulates which tables and
+partitions to include.
+
+00:06:37.960 --> 00:06:40.860
+This statement can also
+incorporate options such as
+
+00:06:40.860 --> 00:06:44.206
+whether to await the completion
+of snapshot creation before
+
+00:06:44.206 --> 00:06:45.880
+returning control to the user.
+
+00:06:47.880 --> 00:06:51.320
+In our example, we create a
+snapshot for a specific
+
+00:06:51.320 --> 00:06:53.040
+partition of the table t1.
+
+00:06:53.880 --> 00:06:57.682
+Only the data from the partition
+where the column date has the
+
+00:06:57.682 --> 00:07:00.760
+value 2023-01-01 will be
+included in the snapshot.
+
+00:07:01.680 --> 00:07:05.072
+The option wait_for_completion =true
+indicates that the
+
+00:07:05.072 --> 00:07:08.520
+statement will not return until
+the snapshot is fully created.
+
+00:07:10.200 --> 00:07:13.501
+Restoring snapshots reverts the
+state of your tables or entire
+
+00:07:13.501 --> 00:07:15.440
+cluster to a previous point in
+time.
+
+00:07:15.840 --> 00:07:18.665
+This can be critical for
+recovery from data loss or
+
+00:07:18.665 --> 00:07:22.144
+corruption, or in our example,
+to restore archived data in case
+
+00:07:22.144 --> 00:07:23.720
+you need to analyze it again.
+
+00:07:24.240 --> 00:07:29.136
+Here is how you can restore data
+in CrateDB: 1) Restore a single
+
+00:07:29.136 --> 00:07:30.360
+table partition:
+
+00:07:30.920 --> 00:07:34.420
+If you need to restore just a
+single partition of a table, you
+
+00:07:34.420 --> 00:07:37.531
+can use the RESTORE SNAPSHOT
+command with the partition
+
+00:07:37.531 --> 00:07:37.920
+clause.
+
+00:07:38.520 --> 00:07:43.461
+Our example shows how to restore
+the partition for January 2023
+
+00:07:43.461 --> 00:07:48.094
+from a snapshot named snapshot1
+in the repository export_cold.
+
+00:07:48.094 --> 00:07:50.720
+2) Restore an entire
+table:
+
+00:07:50.960 --> 00:07:53.920
+To restore an entire table, omit
+the partition clause.
+
+00:07:54.280 --> 00:07:59.267
+The second example with restore
+all partitions from table t1.
+
+00:07:59.267 --> 00:08:01.520
+3) Restore the entire snapshot:
+
+00:08:01.920 --> 00:08:04.775
+If you want to restore
+everything that the snapshot
+
+00:08:04.775 --> 00:08:07.960
+contains, use the ALL keyword as
+illustrated in the third
+
+00:08:07.960 --> 00:08:08.399
+example.
+
+00:08:08.960 --> 00:08:12.805
+This restores all the tables,
+partitions, and possibly other
+
+00:08:12.805 --> 00:08:16.713
+cluster metadata contained in
+the snapshot to ensure a smooth
+
+00:08:16.713 --> 00:08:18.920
+restoration process and CrateDB.
+
+00:08:19.360 --> 00:08:22.416
+If you're restoring a complete
+table, it should have a unique
+
+00:08:22.416 --> 00:08:23.600
+name within the cluster.
+
+00:08:24.560 --> 00:08:27.920
+Utilize renaming strategies or
+schema replacement options
+
+00:08:27.920 --> 00:08:31.281
+during the restore process for
+any tables that need to be
+
+00:08:31.281 --> 00:08:32.439
+uniquely identified.
+
+00:08:32.960 --> 00:08:36.171
+This approach helps to maintain
+a consistent database structure
+
+00:08:36.171 --> 00:08:38.480
+and avoid any conflicts with
+existing tables.
+
+00:08:39.200 --> 00:08:42.369
+If you want to restore all
+tables from the snapshot without
+
+00:08:42.369 --> 00:08:44.800
+the metadata, you can use the
+tables keyword.
+
+00:08:46.080 --> 00:08:48.999
+In addition to table data, you
+can also restore cluster
+
+00:08:48.999 --> 00:08:52.126
+metadata, which includes views,
+cluster settings, and other
+
+00:08:52.126 --> 00:08:54.160
+configurations stored in the
+snapshot.
+
+00:08:54.880 --> 00:08:58.203
+When you no longer need a
+snapshot or if you wish to
+
+00:08:58.203 --> 00:09:02.028
+delete the repository, you can
+use the drop snapshot or drop
+
+00:09:02.028 --> 00:09:04.160
+repository command,
+respectively.
+
+00:09:04.640 --> 00:09:08.023
+This helps in managing the
+storage space and keeping the
+
+00:09:08.023 --> 00:09:11.348
+repository organized by removing
+obsolete snapshots and
+
+00:09:11.348 --> 00:09:12.119
+repositories.
+
+00:09:12.920 --> 00:09:16.341
+Remember that managing snapshots
+and repositories should be part
+
+00:09:16.341 --> 00:09:18.972
+of your regular database
+maintenance and disaster
+
+00:09:18.972 --> 00:09:19.919
+recovery planning.
+
+00:09:20.640 --> 00:09:24.057
+Always ensure that you have
+recent and valid backups, and
+
+00:09:24.057 --> 00:09:27.709
+test your restore procedures
+regularly to ensure they work as
+
+00:09:27.709 --> 00:09:28.240
+expected.

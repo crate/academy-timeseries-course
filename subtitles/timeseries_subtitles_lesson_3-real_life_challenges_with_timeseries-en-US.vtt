@@ -1,0 +1,575 @@
+﻿WEBVTT
+
+00:00:00.080 --> 00:00:04.398
+In this section, we will explore
+the real life challenges of time
+
+00:00:04.398 --> 00:00:08.128
+series data: volume, velocity,
+variety, and veracity and
+
+00:00:08.128 --> 00:00:12.120
+discuss how CrateDB effectively
+addresses these challenges.
+
+00:00:12.920 --> 00:00:16.391
+Let's discuss the inherent 4 V's
+of time series data and how we
+
+00:00:16.391 --> 00:00:18.320
+navigate through these
+challenges.
+
+00:00:19.120 --> 00:00:23.755
+Volume: Time series data is known
+for the vast amount of data it
+
+00:00:23.755 --> 00:00:24.480
+generates.
+
+00:00:25.360 --> 00:00:29.031
+For tasks like root cause
+analysis or precise forecasting,
+
+00:00:29.031 --> 00:00:31.520
+it's crucial to maintain
+granular data.
+
+00:00:32.400 --> 00:00:36.531
+Downsampling isn't an option
+here as it would result in the
+
+00:00:36.531 --> 00:00:39.080
+loss of important details.
+Velocity:
+
+00:00:39.880 --> 00:00:42.866
+The speed at which data is
+generated and processed is
+
+00:00:42.866 --> 00:00:44.360
+another significant factor.
+
+00:00:45.240 --> 00:00:48.671
+High performance queries and
+aggregations are a must and we
+
+00:00:48.671 --> 00:00:51.760
+need to be able to act on
+incoming data in real time.
+
+00:00:53.160 --> 00:00:57.364
+Variety: Time series data comes
+in various types and formats
+
+00:00:57.364 --> 00:01:01.569
+ranging from structured to semi-
+structured and unstructured
+
+00:01:01.569 --> 00:01:01.920
+data.
+
+00:01:02.760 --> 00:01:06.764
+This variety needs to be
+effectively handled by the
+
+00:01:06.764 --> 00:01:08.920
+technology we use. 
+Veracity:
+
+00:01:09.760 --> 00:01:12.905
+Finally, the quality and
+reliability of the data are
+
+00:01:12.905 --> 00:01:13.440
+critical.
+
+00:01:14.280 --> 00:01:17.650
+Given the high volume and
+velocity of time series data,
+
+00:01:17.650 --> 00:01:20.960
+ensuring data veracity can be a
+significant challenge.
+
+00:01:21.880 --> 00:01:24.680
+How do these four V's manifest in
+a data architecture?
+
+00:01:25.360 --> 00:01:28.200
+Depending on the use case of
+your project, various data
+
+00:01:28.200 --> 00:01:29.520
+sources might be relevant.
+
+00:01:30.000 --> 00:01:34.577
+These can range from enterprise
+data from ERP or CRM systems,
+
+00:01:34.577 --> 00:01:39.301
+existing analytical data, sensor
+data APIs, data lakes, or other
+
+00:01:39.301 --> 00:01:40.040
+databases.
+
+00:01:40.520 --> 00:01:44.313
+The applications intended to be
+built can vary from traditional
+
+00:01:44.313 --> 00:01:47.811
+applications that run browser
+based or on mobile phones to
+
+00:01:47.811 --> 00:01:50.953
+real time analytics,
+visualizations, predictions and
+
+00:01:50.953 --> 00:01:53.680
+natural language applications
+like chat bots.
+
+00:01:54.440 --> 00:01:58.231
+Operational tasks that support
+these efforts, like MLOps, also
+
+00:01:58.231 --> 00:01:59.120
+come into play.
+
+00:01:59.720 --> 00:02:03.001
+A project typically starts with
+a time series database that
+
+00:02:03.001 --> 00:02:05.080
+imports data from sensors or
+streams.
+
+00:02:05.600 --> 00:02:09.160
+New applications can be built in
+a timely manner, often with a
+
+00:02:09.160 --> 00:02:10.800
+small team and within budget.
+
+00:02:11.360 --> 00:02:15.012
+As the application grows, you
+start working with contextual
+
+00:02:15.012 --> 00:02:18.360
+data imported from enterprise
+systems like ERP or CRM.
+
+00:02:18.960 --> 00:02:22.160
+Perhaps existing analytical data
+should be utilized as well.
+
+00:02:22.760 --> 00:02:26.007
+At this point, a time series
+database does not fulfill the
+
+00:02:26.007 --> 00:02:29.144
+requirements leading to the
+introduction of a relational
+
+00:02:29.144 --> 00:02:29.640
+database.
+
+00:02:30.040 --> 00:02:32.900
+This new technology needs to be
+integrated and operated
+
+00:02:32.900 --> 00:02:33.360
+properly.
+
+00:02:34.040 --> 00:02:37.679
+Applications now also require a
+back end to communicate with
+
+00:02:37.679 --> 00:02:40.961
+different data stores as they
+cannot speak five or six
+
+00:02:40.961 --> 00:02:44.183
+different languages to access
+each individual storage
+
+00:02:44.183 --> 00:02:44.840
+technology.
+
+00:02:45.520 --> 00:02:49.196
+This application back end could
+be code or a more complex
+
+00:02:49.196 --> 00:02:52.175
+solution like data
+virtualization or federated
+
+00:02:52.175 --> 00:02:53.000
+query layers.
+
+00:02:53.760 --> 00:02:57.403
+Alternatively, or in addition,
+you might start integrating a
+
+00:02:57.403 --> 00:03:01.107
+document database for easier and
+faster schema management for
+
+00:03:01.107 --> 00:03:02.840
+more diverse contextual data.
+
+00:03:03.560 --> 00:03:06.853
+This addition to the tech stack
+introduces a new language that
+
+00:03:06.853 --> 00:03:08.160
+developers need to learn.
+
+00:03:08.880 --> 00:03:12.140
+As the application gains more
+users, the demand for data
+
+00:03:12.140 --> 00:03:15.343
+search functionality grows,
+prompting the addition of a
+
+00:03:15.343 --> 00:03:18.890
+search engine to the tech stack
+and yet another language that
+
+00:03:18.890 --> 00:03:20.320
+developers need to learn.
+
+00:03:21.240 --> 00:03:24.290
+The number of data integration
+and synchronization processes
+
+00:03:24.290 --> 00:03:25.040
+also increases.
+
+00:03:25.760 --> 00:03:28.973
+Taking this scenario further, a
+geo-database and a new query
+
+00:03:28.973 --> 00:03:32.240
+language may be introduced for
+specialized tracking purposes.
+
+00:03:32.960 --> 00:03:36.659
+Finally, as users request a chat
+bot interface, a vector database
+
+00:03:36.659 --> 00:03:39.574
+might be introduced to store the
+necessary semantic
+
+00:03:39.574 --> 00:03:41.199
+representations of your data.
+
+00:03:41.880 --> 00:03:45.440
+These technologies also come
+with their own proprietary APIs.
+
+00:03:46.680 --> 00:03:50.186
+In the end you have a very
+complex architecture with a lot
+
+00:03:50.186 --> 00:03:53.573
+of data replication, different
+technologies and multiple
+
+00:03:53.573 --> 00:03:57.080
+different languages in use for
+each of these technologies.
+
+00:03:57.840 --> 00:04:01.343
+Usually this reality is hidden
+behind a well drawn architecture
+
+00:04:01.343 --> 00:04:04.080
+picture, but it remains a
+spaghetti architecture.
+
+00:04:04.760 --> 00:04:07.866
+The effort in terms of people,
+time and money has grown
+
+00:04:07.866 --> 00:04:11.305
+significantly at this stage,
+demonstrating the complexity and
+
+00:04:11.305 --> 00:04:14.744
+challenges of managing all data
+that is necessary to build an
+
+00:04:14.744 --> 00:04:16.520
+end to end time series solution.
+
+00:04:17.520 --> 00:04:21.380
+In summary, as time series data
+management projects evolve, they
+
+00:04:21.380 --> 00:04:24.349
+often encounter a growing
+complexity and mounting
+
+00:04:24.349 --> 00:04:25.240
+technical debt.
+
+00:04:26.120 --> 00:04:29.804
+This debt, once established,
+becomes increasingly hard to
+
+00:04:29.804 --> 00:04:30.440
+eliminate.
+
+00:04:31.320 --> 00:04:34.358
+Managing diverse data types in
+separate data stores
+
+00:04:34.358 --> 00:04:37.923
+necessitates data integration
+and synchronization, which add
+
+00:04:37.923 --> 00:04:39.560
+to the project's complexity.
+
+00:04:40.360 --> 00:04:44.280
+Furthermore, scaling up and out
+multiple data stores can prove
+
+00:04:44.280 --> 00:04:48.137
+challenging as traditional time
+series databases often falter
+
+00:04:48.137 --> 00:04:49.320
+under such demands.
+
+00:04:50.200 --> 00:04:53.308
+The result is an intricate
+application back end due to
+
+00:04:53.308 --> 00:04:56.756
+different languages and silos
+which can be quite challenging
+
+00:04:56.756 --> 00:04:58.000
+to manage effectively.
+
+00:04:58.600 --> 00:05:03.160
+These issues have significant
+implications on the people
+
+00:05:03.160 --> 00:05:03.640
+front.
+
+00:05:03.920 --> 00:05:07.269
+The complexity necessitates
+multiple skill sets and a larger
+
+00:05:07.269 --> 00:05:09.520
+team to maintain the system
+effectively.
+
+00:05:10.320 --> 00:05:14.692
+This situation is far from the
+ideal scenario of simple and
+
+00:05:14.692 --> 00:05:18.919
+fast training, high developer
+productivity, and efficient
+
+00:05:18.919 --> 00:05:20.959
+operations in terms of time.
+
+00:05:21.240 --> 00:05:24.807
+These challenges slow down the
+delivery of value, prolong the
+
+00:05:24.807 --> 00:05:28.087
+time required for changes, and
+lead to a lot of overhead
+
+00:05:28.087 --> 00:05:28.720
+activities.
+
+00:05:29.560 --> 00:05:32.722
+This is a stark contrast to the
+desired state of fast
+
+00:05:32.722 --> 00:05:34.480
+development and rapid changes.
+
+00:05:35.840 --> 00:05:39.732
+Moreover, these issues result in
+high total cost of ownership and
+
+00:05:39.732 --> 00:05:43.389
+high cost of change, both of
+which businesses would prefer to
+
+00:05:43.389 --> 00:05:43.919
+minimize.
+
+00:05:44.400 --> 00:05:47.825
+The solution to these challenges
+lies in maintaining a single
+
+00:05:47.825 --> 00:05:50.920
+source of truth that is kept
+updated in near real time.
+
+00:05:51.800 --> 00:05:55.411
+This involves native support for
+multiple data types in one
+
+00:05:55.411 --> 00:05:58.000
+technology accessible via
+standard SQL.
+
+00:05:59.400 --> 00:06:03.193
+A dynamic schema supports rapid
+application development and
+
+00:06:03.193 --> 00:06:06.544
+evolution, while high
+performance, availability, and
+
+00:06:06.544 --> 00:06:10.211
+scalability ensure that the
+system can handle the demands
+
+00:06:10.211 --> 00:06:11.160
+placed upon it.
+
+00:06:12.040 --> 00:06:15.855
+In this way, businesses can
+effectively manage time series
+
+00:06:15.855 --> 00:06:19.218
+data, reducing complexity,
+minimizing total cost of
+
+00:06:19.218 --> 00:06:22.000
+ownership, and accelerating time
+to value.
+
+00:06:23.000 --> 00:06:25.200
+This is exactly how CrateDB can
+help.
+
+00:06:25.840 --> 00:06:29.337
+Beyond its capability of storing
+tabular and time series data,
+
+00:06:29.337 --> 00:06:32.613
+CrateDB provides several
+additional features that enhance
+
+00:06:32.613 --> 00:06:33.280
+its utility.
+
+00:06:33.880 --> 00:06:37.759
+These include support for JSON
+full-text search, vector storage
+
+00:06:37.759 --> 00:06:41.280
+and similarity search as well as
+geospatial data handling.
+
+00:06:41.800 --> 00:06:43.560
+It can also store binary data.
+
+00:06:44.000 --> 00:06:47.435
+All of these data types can be
+combined in a single database
+
+00:06:47.435 --> 00:06:50.870
+record if needed and be easily
+accessed via standard SQL,
+
+00:06:50.870 --> 00:06:54.024
+making CrateDB a robust and
+versatile solution for time
+
+00:06:54.024 --> 00:06:55.320
+series data management.
+
+00:06:56.120 --> 00:06:59.571
+The dynamic schema and user
+defined functions add the needed
+
+00:06:59.571 --> 00:07:02.626
+flexibility for efficient
+application development and
+
+00:07:02.626 --> 00:07:06.078
+maintenance when it comes to
+building new features, changing
+
+00:07:06.078 --> 00:07:09.360
+data schemas of sources and
+integrating new data sources.
+
+00:07:10.160 --> 00:07:13.488
+The versatility and flexibility
+are backed by a distributed
+
+00:07:13.488 --> 00:07:16.816
+query engine that allows for
+massive high volume concurrent
+
+00:07:16.816 --> 00:07:17.760
+reads and writes.
+
+00:07:18.480 --> 00:07:21.800
+The columnar storage and
+advanced indexing techniques
+
+00:07:21.800 --> 00:07:25.550
+help to support complex queries
+and aggregations which eases
+
+00:07:25.550 --> 00:07:29.240
+development as not all indexes
+need to be defined manually.
+
+00:07:29.920 --> 00:07:32.975
+The distributed nature allows
+for highly available and
+
+00:07:32.975 --> 00:07:34.920
+horizontal scalable
+architectures.
+
+00:07:35.680 --> 00:07:39.510
+Last but not least, CrateDB can
+be deployed on the edge in your
+
+00:07:39.510 --> 00:07:42.280
+data centers as well as in cloud
+environments.
+
+00:07:42.760 --> 00:07:45.360
+It is also available as a fully
+managed service.
+
+00:07:45.920 --> 00:07:49.676
+A synchronization mechanism
+called Logical replication helps
+
+00:07:49.676 --> 00:07:53.370
+to keep the edge and other
+clusters in sync, for example to
+
+00:07:53.370 --> 00:07:56.757
+store and process data on the
+edge and synchronize the
+
+00:07:56.757 --> 00:08:00.205
+relevant information into the
+cloud to perform holistic
+
+00:08:00.205 --> 00:08:00.760
+analysis.

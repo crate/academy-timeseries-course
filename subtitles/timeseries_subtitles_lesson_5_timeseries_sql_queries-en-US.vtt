@@ -1,0 +1,384 @@
+﻿WEBVTT
+
+00:00:00.400 --> 00:00:04.224
+In this section, we will explore
+the versatility of SQL in
+
+00:00:04.224 --> 00:00:07.307
+accessing and manipulating
+various types of data,
+
+00:00:07.307 --> 00:00:09.960
+specifically focusing on time
+series data.
+
+00:00:10.840 --> 00:00:14.275
+We will dive deeper into how
+SQL can be effectively used
+
+00:00:14.275 --> 00:00:17.597
+for handling time series data,
+allowing for efficient and
+
+00:00:17.597 --> 00:00:18.799
+robust data analysis.
+
+00:00:19.680 --> 00:00:22.856
+This will include discussing
+various SQL functions and
+
+00:00:22.856 --> 00:00:26.142
+methods that are particularly
+useful in the context of time
+
+00:00:26.142 --> 00:00:26.800
+series data.
+
+00:00:30.000 --> 00:00:32.660
+In the upcoming practical
+exercise, we will be using
+
+00:00:32.660 --> 00:00:35.320
+Jupyter Notebook to interact
+directly with CrateDB.
+
+00:00:36.200 --> 00:00:38.855
+This hands on approach will
+enable us to create tables and
+
+00:00:38.855 --> 00:00:41.240
+import the sample data that
+we've discussed earlier.
+
+00:00:41.960 --> 00:00:45.129
+We will then use SQL to query
+this data and visualize the
+
+00:00:45.129 --> 00:00:47.520
+results using Pandas data frames
+and Plotly.
+
+00:00:48.800 --> 00:00:52.430
+Throughout this exercise we will
+explore the extensive SQL
+
+00:00:52.430 --> 00:00:54.480
+querying capabilities of CrateDB.
+
+00:00:55.040 --> 00:00:58.171
+This includes the use of
+aggregations to summarize our
+
+00:00:58.171 --> 00:01:01.814
+data, common table expressions
+to simplify complex queries, and
+
+00:01:01.814 --> 00:01:04.320
+window functions for advanced
+calculations.
+
+00:01:04.720 --> 00:01:07.869
+We will also cover the
+interpolation of missing values
+
+00:01:07.869 --> 00:01:11.076
+to ensure data continuity and
+the calculation of moving
+
+00:01:11.076 --> 00:01:12.680
+averages for trend analysis.
+
+00:01:13.120 --> 00:01:16.646
+Furthermore, we will discuss the
+use of joins to combine data
+
+00:01:16.646 --> 00:01:19.320
+from different tables based on
+common columns.
+
+00:01:20.520 --> 00:01:24.088
+Lastly, we will go over the use
+of JSON and Pandas data frames
+
+00:01:24.088 --> 00:01:26.040
+for managing semi-structured
+data.
+
+00:01:26.640 --> 00:01:29.913
+This exercise will provide a
+comprehensive overview of the
+
+00:01:29.913 --> 00:01:33.520
+practical applications of CrateDB
+in handling time series data.
+
+00:01:35.760 --> 00:01:39.312
+We start by setting up our
+environment, connecting to CrateDB
+
+00:01:39.312 --> 00:01:41.680
+and preparing our data for
+analysis.
+
+00:01:42.600 --> 00:01:46.013
+All necessary dependencies can
+be installed by running the pip
+
+00:01:46.013 --> 00:01:46.880
+install command.
+
+00:01:48.760 --> 00:01:52.260
+To work with our code examples,
+a connection to a CrateDB
+
+00:01:52.260 --> 00:01:54.040
+database cluster is essential.
+
+00:01:54.920 --> 00:01:58.340
+This could be via a managed
+CrateDB cloud instance or a
+
+00:01:58.340 --> 00:02:00.440
+local setup, perhaps using
+Docker.
+
+00:02:01.280 --> 00:02:04.683
+Replace the placeholders with
+your actual CrateDB credentials
+
+00:02:04.683 --> 00:02:06.520
+to establish a secure
+connection.
+
+00:02:08.360 --> 00:02:12.235
+Once the connection string is
+defined, we create an Engine
+
+00:02:12.235 --> 00:02:13.680
+object in SQL Alchemy.
+
+00:02:14.520 --> 00:02:17.661
+We turn to SQL to define the
+structure for our weather data
+
+00:02:17.661 --> 00:02:18.080
+storage.
+
+00:02:19.000 --> 00:02:22.113
+CrateDB speaks SQL, so it's
+straightforward to create a
+
+00:02:22.113 --> 00:02:24.680
+table with a structure that fits
+our data set.
+
+00:02:25.560 --> 00:02:29.067
+If you're using CrateDB Cloud,
+there is a convenient option to
+
+00:02:29.067 --> 00:02:32.136
+import your weather data
+directly through an integrated
+
+00:02:32.136 --> 00:02:35.588
+import feature available in the
+Tutorials section of the CrateDB
+
+00:02:35.588 --> 00:02:36.520
+Cloud Console.
+
+00:02:38.360 --> 00:02:41.921
+If you haven't used the CrateDB
+Cloud tutorial sample data, you
+
+00:02:41.921 --> 00:02:44.880
+can load your data set using the
+COPY FROM statement.
+
+00:02:45.760 --> 00:02:49.224
+Here's an example command that
+loads data from a CSV file
+
+00:02:49.224 --> 00:02:50.240
+hosted on GitHub.
+
+00:02:51.160 --> 00:02:53.964
+The result will indicate how
+many records were loaded
+
+00:02:53.964 --> 00:02:54.640
+successfully.
+
+00:02:55.520 --> 00:02:59.062
+For instance, a response like
+the following signifies a
+
+00:02:59.062 --> 00:03:01.720
+successful data import of 70,000
+records.
+
+00:03:03.520 --> 00:03:05.160
+Let's now turn to data querying.
+
+00:03:05.680 --> 00:03:09.095
+With SQL, we can easily
+retrieve data and use Python to
+
+00:03:09.095 --> 00:03:12.280
+load it into a pandas data frame
+for further analysis.
+
+00:03:12.760 --> 00:03:16.712
+For clarity reasons, we convert
+the timestamps, which are stored
+
+00:03:16.712 --> 00:03:20.360
+in CrateDB as big integers to
+the Python date time format.
+
+00:03:21.000 --> 00:03:24.593
+CrateDB is optimized for fast
+aggregations thanks to its
+
+00:03:24.593 --> 00:03:26.080
+columnar storage engine.
+
+00:03:26.640 --> 00:03:29.145
+Here's an example where we
+calculate the average
+
+00:03:29.145 --> 00:03:30.680
+temperature for each location.
+
+00:03:30.800 --> 00:03:34.584
+Using the AVERAGE function, we
+can further enhance our query to
+
+00:03:34.584 --> 00:03:37.777
+capture the highest and lowest
+temperatures and their
+
+00:03:37.777 --> 00:03:38.960
+corresponding times.
+
+00:03:39.600 --> 00:03:43.160
+This is easily achieved with MAX
+BY and MIN BY aggregation
+
+00:03:43.160 --> 00:03:46.720
+functions that streamline the
+process into a single query.
+
+00:03:48.000 --> 00:03:51.612
+The next section of the notebook
+illustrates how to use the Plotly
+
+00:03:51.612 --> 00:03:53.280
+library to visualize data.
+
+00:03:54.000 --> 00:03:57.750
+Such visualizations can quickly
+reveal patterns and areas where
+
+00:03:57.750 --> 00:03:59.040
+data might be missing.
+
+00:04:01.040 --> 00:04:04.083
+The rest of the notebook
+illustrates advanced SQL queries
+
+00:04:04.083 --> 00:04:05.080
+and interpolations.
+
+00:04:05.480 --> 00:04:08.367
+It gives you detailed
+instructions on how to fill in
+
+00:04:08.367 --> 00:04:11.799
+missing values using advanced
+SQL features of CrateDB such as
+
+00:04:11.799 --> 00:04:14.360
+window functions and common
+table expressions.
+
+00:04:14.800 --> 00:04:18.333
+By following the notebook you
+will also learn how to calculate
+
+00:04:18.333 --> 00:04:21.866
+moving averages and how CrateDB
+support for JSON as a native
+
+00:04:21.866 --> 00:04:25.288
+data type provides us with the
+flexibility to handle dynamic
+
+00:04:25.288 --> 00:04:28.597
+schema requirements and how to
+handle these structures and
+
+00:04:28.597 --> 00:04:30.280
+queries and pandas dataframes.
+
+00:04:32.760 --> 00:04:35.738
+There are additional useful
+functions available in CrateDB
+
+00:04:35.738 --> 00:04:38.320
+that have not been covered in
+the Jupyter notebook.
+
+00:04:40.240 --> 00:04:44.082
+Data binning is useful to group
+data by time based intervals,
+
+00:04:44.082 --> 00:04:45.880
+for example every 10 seconds.
+
+00:04:46.720 --> 00:04:50.329
+This function is also useful for
+instance to harmonize non
+
+00:04:50.329 --> 00:04:54.000
+equidistant events to correlate
+them to equidistant events.
+
+00:04:55.880 --> 00:04:59.160
+Some use cases might require a
+sampling of the data set.
+
+00:05:00.040 --> 00:05:03.381
+This can easily be achieved with
+a modulo operator on the
+
+00:05:03.381 --> 00:05:04.880
+internal doc id attribute.
+
+00:05:06.840 --> 00:05:10.624
+Domain specific logic can be put
+into user defined functions to
+
+00:05:10.624 --> 00:05:13.640
+make it reusable in an easy and
+consistent manner.
+
+00:05:14.480 --> 00:05:17.381
+Here we calculate the
+temperature in Fahrenheit from
+
+00:05:17.381 --> 00:05:19.680
+degrees Celsius in a dedicated
+function.
+
+00:05:21.560 --> 00:05:24.648
+Please check the CreateDB
+documentation for further
+
+00:05:24.648 --> 00:05:27.915
+aggregation functions like hyper
+log, log distinct for
+
+00:05:27.915 --> 00:05:31.480
+approximate distinct counts or
+array aggregation functions.

@@ -1,0 +1,280 @@
+﻿WEBVTT
+
+00:00:00.280 --> 00:00:03.597
+Time series data refers to a
+collection of data points that
+
+00:00:03.597 --> 00:00:07.080
+are ordered and arranged in a
+sequential manner based on time.
+
+00:00:07.960 --> 00:00:10.876
+This type of data is
+characterized by its unique
+
+00:00:10.876 --> 00:00:14.506
+features, such as the inherent
+sequential nature of the data
+
+00:00:14.506 --> 00:00:17.720
+points and the presence of
+various patterns including
+
+00:00:17.720 --> 00:00:20.160
+trends, seasonality, and
+irregularities.
+
+00:00:21.480 --> 00:00:24.808
+Time series data is ubiquitous
+and spreads across a multitude
+
+00:00:24.808 --> 00:00:25.560
+of industries.
+
+00:00:26.360 --> 00:00:29.340
+For example, in the
+manufacturing sector, time
+
+00:00:29.340 --> 00:00:32.765
+series data is utilized for
+monitoring and optimizing
+
+00:00:32.765 --> 00:00:35.555
+production processes,
+forecasting equipment
+
+00:00:35.555 --> 00:00:38.600
+maintenance, and analyzing
+supply chain trends.
+
+00:00:39.360 --> 00:00:43.077
+In transportation and logistics,
+it is used to monitor traffic
+
+00:00:43.077 --> 00:00:46.440
+patterns and optimize delivery
+routes of managed fleets.
+
+00:00:47.080 --> 00:00:50.360
+Intra logistics offers a lot of
+potential for optimization.
+
+00:00:51.080 --> 00:00:54.176
+In the energy sector, time
+series data allows for the
+
+00:00:54.176 --> 00:00:57.329
+prediction of energy demand and
+optimization of energy
+
+00:00:57.329 --> 00:00:57.960
+production.
+
+00:00:58.680 --> 00:01:02.246
+In monitoring and security
+metrics, events and logs can be
+
+00:01:02.246 --> 00:01:05.995
+collected and analyzed in real
+time to correlate them to each
+
+00:01:05.995 --> 00:01:09.320
+other and automatically detect
+failures or intrusions.
+
+00:01:10.040 --> 00:01:13.697
+Regardless of the industry, time
+series data plays a crucial role
+
+00:01:13.697 --> 00:01:16.690
+in enabling businesses to make
+data-driven decisions,
+
+00:01:16.690 --> 00:01:19.960
+highlighting its importance in
+today's data centric world.
+
+00:01:21.760 --> 00:01:25.705
+What do all of these use cases
+have in common When it comes to
+
+00:01:25.705 --> 00:01:29.525
+data management, time series
+data is often more complex than
+
+00:01:29.525 --> 00:01:32.720
+just a collection of timestamps,
+tags, and values.
+
+00:01:33.600 --> 00:01:37.426
+It can come in various formats
+including tabular or Jason,
+
+00:01:37.426 --> 00:01:41.447
+often includes textual data, and
+schemas might change without
+
+00:01:41.447 --> 00:01:42.680
+prior notification.
+
+00:01:43.560 --> 00:01:47.707
+Users oftentimes request a very
+long retention period to analyze
+
+00:01:47.707 --> 00:01:48.920
+patterns over time.
+
+00:01:49.800 --> 00:01:53.584
+To properly interpret these data
+points, contextual information
+
+00:01:53.584 --> 00:01:56.600
+is required which is usually not
+time series data.
+
+00:01:57.480 --> 00:02:00.848
+This is mainly metadata and
+master data of sensors or
+
+00:02:00.848 --> 00:02:04.716
+assets, enterprise data about
+customers or production orders,
+
+00:02:04.716 --> 00:02:07.959
+as well as external data such as
+weather forecasts.
+
+00:02:08.840 --> 00:02:13.269
+In typical applications, there
+is about 90% time series data
+
+00:02:13.269 --> 00:02:15.520
+and 10% contextual information.
+
+00:02:16.920 --> 00:02:20.157
+There are many use cases for
+time series data that go beyond
+
+00:02:20.157 --> 00:02:22.280
+just querying and visualizing
+the data.
+
+00:02:23.160 --> 00:02:26.500
+These include applying
+statistics and machine learning
+
+00:02:26.500 --> 00:02:29.720
+for anomaly detection,
+forecasting, and predictions.
+
+00:02:31.160 --> 00:02:33.966
+A rich user experience is
+necessary for these
+
+00:02:33.966 --> 00:02:34.760
+applications.
+
+00:02:35.600 --> 00:02:39.228
+This includes performant ad hoc
+queries that join and correlate
+
+00:02:39.228 --> 00:02:42.687
+time series with each other as
+well as with their contextual
+
+00:02:42.687 --> 00:02:45.748
+data, full text search
+capabilities like fuzzy search
+
+00:02:45.748 --> 00:02:47.960
+and embeddings, and similarity
+search.
+
+00:02:48.000 --> 00:02:52.559
+To power modern natural language
+applications like chat bots, we
+
+00:02:52.559 --> 00:02:57.189
+want to demonstrate how to build
+time series solutions with CrateDB.
+
+00:02:57.960 --> 00:03:00.775
+This includes working with
+various types of data in
+
+00:03:00.775 --> 00:03:03.808
+addition to traditional time
+series data, which is very
+
+00:03:03.808 --> 00:03:05.920
+important to provide the full
+context.
+
+00:03:06.600 --> 00:03:10.170
+These additional data can be,
+for example, master data from
+
+00:03:10.170 --> 00:03:11.480
+other systems or logs.
+
+00:03:11.880 --> 00:03:15.174
+The ingest can be done via a
+variety of methods like batch
+
+00:03:15.174 --> 00:03:17.520
+uploading or streaming data in
+real time.
+
+00:03:17.960 --> 00:03:20.600
+Once the data is loaded, you'll
+need to model it.
+
+00:03:21.240 --> 00:03:24.542
+CrateDB allows you to create
+tables and schemas that are
+
+00:03:24.542 --> 00:03:26.080
+ideal for time series data.
+
+00:03:26.480 --> 00:03:30.131
+When it comes to storing,
+querying and analyzing data,
+
+00:03:30.131 --> 00:03:34.314
+CrateDB is a very good fit as
+it is designed as a distributed
+
+00:03:34.314 --> 00:03:38.232
+database built for handling
+large volumes of granular data
+
+00:03:38.232 --> 00:03:42.481
+in multiple different formats,
+tables, time series, Jason based
+
+00:03:42.481 --> 00:03:46.200
+documents, Geospatial, full text
+and vector embeddings.
+
+00:03:46.960 --> 00:03:50.740
+With CrateDB you can perform
+complex queries and aggregations
+
+00:03:50.740 --> 00:03:54.160
+in real time, which is crucial
+for time series analysis.
+
+00:03:54.920 --> 00:03:58.194
+We will show in the next videos
+how to visualize data and how to
+
+00:03:58.194 --> 00:04:00.360
+efficiently train machine
+learning models.
+
+00:04:00.920 --> 00:04:04.453
+These can be used, for example,
+to detect anomalies or forecast
+
+00:04:04.453 --> 00:04:06.000
+time series into the future.

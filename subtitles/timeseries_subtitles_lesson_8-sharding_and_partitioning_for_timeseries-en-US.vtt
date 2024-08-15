@@ -1,0 +1,761 @@
+﻿WEBVTT
+
+00:00:00.200 --> 00:00:03.460
+Sharding and partitioning are
+essential aspects of storing
+
+00:00:03.460 --> 00:00:04.400
+time series data.
+
+00:00:05.240 --> 00:00:08.858
+Partitioning allows data to be
+subdivided into smaller, more
+
+00:00:08.858 --> 00:00:12.240
+manageable pieces, enhancing
+read and write performance.
+
+00:00:13.120 --> 00:00:16.867
+Sharding is a strategy used to
+distribute the data horizontally
+
+00:00:16.867 --> 00:00:20.497
+across multiple nodes, thereby
+improving the speed of queries
+
+00:00:20.497 --> 00:00:21.200
+and updates.
+
+00:00:23.240 --> 00:00:27.141
+Partitioning in CrateDB is a
+powerful feature that allows you
+
+00:00:27.141 --> 00:00:30.920
+to split up a large table into
+smaller chunks or partitions.
+
+00:00:31.480 --> 00:00:35.289
+By doing so, CrateDB minimizes
+the number of records that need
+
+00:00:35.289 --> 00:00:38.922
+to be scanned during a query,
+which can significantly improve
+
+00:00:38.922 --> 00:00:41.560
+performance, especially for
+large data sets.
+
+00:00:42.280 --> 00:00:45.552
+For time series data, you
+usually use a timestamp or date
+
+00:00:45.552 --> 00:00:47.640
+column to define partition
+criteria.
+
+00:00:48.360 --> 00:00:52.009
+For example, you can partition
+data by month as shown in the
+
+00:00:52.009 --> 00:00:55.600
+provided SQL statement for
+creating the weather data table.
+
+00:00:56.040 --> 00:00:59.567
+In this table, the month column
+is a generated column that uses
+
+00:00:59.567 --> 00:01:02.543
+the date trunk function to
+extract the month from the
+
+00:01:02.543 --> 00:01:03.480
+timestamp column.
+
+00:01:03.920 --> 00:01:07.088
+The resulting table is
+partitioned by the month column,
+
+00:01:07.088 --> 00:01:10.595
+which means that each partition
+will contain records for each
+
+00:01:10.595 --> 00:01:11.840
+individual month only.
+
+00:01:12.200 --> 00:01:15.646
+For quarterly, daily, or hourly
+partitioning, you would need to
+
+00:01:15.646 --> 00:01:18.608
+adjust the generated column
+expression to truncate the
+
+00:01:18.608 --> 00:01:20.440
+timestamp to a specific
+interval.
+
+00:01:21.440 --> 00:01:25.033
+New partitions are automatically
+created on the first data ingest
+
+00:01:25.033 --> 00:01:27.320
+that falls into a new partition
+interval.
+
+00:01:27.880 --> 00:01:30.373
+You do not need to manually
+manage the creation of
+
+00:01:30.373 --> 00:01:31.840
+partitions as your data grows.
+
+00:01:32.280 --> 00:01:35.929
+Instead, CrateDB handles this
+for you, creating new partitions
+
+00:01:35.929 --> 00:01:39.578
+whenever they are needed based
+on the partitioning strategy you
+
+00:01:39.578 --> 00:01:40.320
+have defined.
+
+00:01:41.080 --> 00:01:44.668
+Partitions in CrateDB offer a
+level of granularity that allows
+
+00:01:44.668 --> 00:01:47.080
+for individual management and
+maintenance.
+
+00:01:47.560 --> 00:01:51.004
+This means that each partition
+can be backed up, closed,
+
+00:01:51.004 --> 00:01:53.120
+deleted, or archived
+individually.
+
+00:01:53.760 --> 00:01:56.750
+This flexibility provides
+efficient data management,
+
+00:01:56.750 --> 00:02:00.080
+particularly important in
+handling large time series data.
+
+00:02:00.840 --> 00:02:04.439
+For example, if a specific
+partition contains outdated or
+
+00:02:04.439 --> 00:02:07.976
+irrelevant data, it can be
+removed without impacting the
+
+00:02:07.976 --> 00:02:09.280
+rest of the database.
+
+00:02:09.800 --> 00:02:13.165
+Similarly, individual backups
+allow for specific data
+
+00:02:13.165 --> 00:02:16.655
+recovery, while archiving can
+help optimize storage and
+
+00:02:16.655 --> 00:02:18.400
+improve overall performance.
+
+00:02:20.560 --> 00:02:23.884
+Sharding in CrateDB is a
+fundamental concept that allows
+
+00:02:23.884 --> 00:02:27.265
+for the horizontal scaling of
+data storage and distributed
+
+00:02:27.265 --> 00:02:28.240
+query processing.
+
+00:02:29.560 --> 00:02:33.157
+When you create a table in CrateDB,
+the data is not just stored
+
+00:02:33.157 --> 00:02:35.040
+in a single monolithic
+structure.
+
+00:02:35.240 --> 00:02:38.475
+Instead, it is split into
+shards, which are distributed
+
+00:02:38.475 --> 00:02:40.440
+across the nodes in your
+cluster.
+
+00:02:42.400 --> 00:02:46.154
+For instance, consider the SQL
+statement for creating a weather
+
+00:02:46.154 --> 00:02:46.800
+data table.
+
+00:02:47.680 --> 00:02:51.415
+The clustered into three shards
+clause tells CrateDB to divide
+
+00:02:51.415 --> 00:02:53.400
+each partition into three
+shards.
+
+00:02:54.280 --> 00:02:57.606
+Each partition's data will be
+split across the shards, and
+
+00:02:57.606 --> 00:03:00.200
+each Shard will hold roughly 1/3
+of the data.
+
+00:03:01.520 --> 00:03:04.759
+The number of shards is
+configurable and you can decide
+
+00:03:04.759 --> 00:03:08.346
+how many shards to create based
+on the size of your data set,
+
+00:03:08.346 --> 00:03:11.759
+the number of nodes in your
+cluster and the amount of CPUs
+
+00:03:11.759 --> 00:03:12.280
+per node.
+
+00:03:13.200 --> 00:03:16.920
+As the data volume can grow over
+time, the number of shards per
+
+00:03:16.920 --> 00:03:20.467
+partition can be changed over
+time and therefore allowing to
+
+00:03:20.467 --> 00:03:23.199
+create more shards and more
+recent partitions.
+
+00:03:24.560 --> 00:03:28.111
+This is particularly useful when
+onboarding, for example,
+
+00:03:28.111 --> 00:03:30.560
+additional devices or weather
+stations.
+
+00:03:31.440 --> 00:03:34.376
+Another case might be gathering
+measurements in a higher
+
+00:03:34.376 --> 00:03:36.952
+frequency and therefore
+generating more data than
+
+00:03:36.952 --> 00:03:37.880
+initially planned.
+
+00:03:38.760 --> 00:03:42.158
+Increasing the number of shards
+might be necessary to ensure
+
+00:03:42.158 --> 00:03:43.440
+consistent performance.
+
+00:03:45.720 --> 00:03:49.118
+Sharding combined with
+partitioning provides 2 levels
+
+00:03:49.118 --> 00:03:50.440
+of data organization.
+
+00:03:51.760 --> 00:03:54.759
+In the provided SQL
+statement, the weather data
+
+00:03:54.759 --> 00:03:58.581
+table is not only partitioned by
+month, but it is also separated
+
+00:03:58.581 --> 00:03:59.640
+into three shards.
+
+00:04:01.000 --> 00:04:04.665
+This setup allows CrateDB to
+perform operations in parallel
+
+00:04:04.665 --> 00:04:07.670
+across different shards and
+partitions, which can
+
+00:04:07.670 --> 00:04:11.035
+significantly improve query
+performance, especially for
+
+00:04:11.035 --> 00:04:14.160
+large time series data sets and
+concurrent queries.
+
+00:04:15.000 --> 00:04:18.489
+The performance can be increased
+by sharding on single node
+
+00:04:18.489 --> 00:04:22.153
+instances as well, as queries
+and aggregations can be executed
+
+00:04:22.153 --> 00:04:25.527
+in parallel and existing
+hardware is utilized in the best
+
+00:04:25.527 --> 00:04:25.759
+way.
+
+00:04:27.840 --> 00:04:30.951
+The number of replicas in your
+CrateDB cluster is a crucial
+
+00:04:30.951 --> 00:04:33.858
+factor that depends on the
+availability of service level
+
+00:04:33.858 --> 00:04:35.440
+agreements of your application.
+
+00:04:36.160 --> 00:04:38.919
+It's recommended to have at
+least one replica for each
+
+00:04:38.919 --> 00:04:41.578
+Shard, but two replicas would
+provide a better fault
+
+00:04:41.578 --> 00:04:42.080
+tolerance.
+
+00:04:42.800 --> 00:04:45.896
+CrateDB ensures that primary
+and replica shards are
+
+00:04:45.896 --> 00:04:49.693
+automatically distributed across
+nodes in the cluster, enhancing
+
+00:04:49.693 --> 00:04:51.680
+data availability and
+durability.
+
+00:04:52.240 --> 00:04:56.157
+In the event of node failures,
+CrateDB automatically promotes
+
+00:04:56.157 --> 00:04:59.516
+replica shards to primary
+shards, ensuring continuous
+
+00:04:59.516 --> 00:05:00.760
+access to your data.
+
+00:05:01.520 --> 00:05:04.696
+This feature also allows for
+rolling maintenance operations
+
+00:05:04.696 --> 00:05:07.819
+without causing downtime as the
+database remains available
+
+00:05:07.819 --> 00:05:10.889
+through the replicas even when
+some nodes are temporarily
+
+00:05:10.889 --> 00:05:12.160
+offline for maintenance.
+
+00:05:13.360 --> 00:05:16.705
+Replica shards are also used for
+querying and aggregating data
+
+00:05:16.705 --> 00:05:19.520
+and therefore enhance the
+overall query performance.
+
+00:05:21.640 --> 00:05:25.499
+When implementing sharding and
+partitioning strategies for time
+
+00:05:25.499 --> 00:05:29.118
+series data in CrateDB, it's
+important to consider several
+
+00:05:29.118 --> 00:05:32.676
+best practices to optimize
+performance, manageability, and
+
+00:05:32.676 --> 00:05:33.399
+scalability.
+
+00:05:34.720 --> 00:05:38.066
+To ensure optimal performance
+and resource utilization, you
+
+00:05:38.066 --> 00:05:40.520
+should consider the total number
+of shards.
+
+00:05:41.360 --> 00:05:44.820
+This is determined by the number
+of partitions multiplied by the
+
+00:05:44.820 --> 00:05:47.960
+number of shards per partition
+multiplied by the number of
+
+00:05:47.960 --> 00:05:48.440
+replicas.
+
+00:05:49.320 --> 00:05:52.612
+It's important to calculate this
+number carefully to balance
+
+00:05:52.612 --> 00:05:54.880
+query performance with resource
+overhead.
+
+00:05:56.280 --> 00:05:59.831
+For example, with monthly
+partitioning, 3 shards per
+
+00:05:59.831 --> 00:06:04.120
+partition and one replica, you
+would have a total of 72 shards.
+
+00:06:05.040 --> 00:06:08.640
+12 months times 3 shards, times
+2 replicas.
+
+00:06:10.560 --> 00:06:12.960
+Shard size is another crucial
+factor.
+
+00:06:14.280 --> 00:06:18.500
+The ideal size for each Shard is
+between approximately 3 and 70
+
+00:06:18.500 --> 00:06:19.160
+gigabytes.
+
+00:06:20.040 --> 00:06:23.520
+Shards that are too small may
+result in unnecessary overhead,
+
+00:06:23.520 --> 00:06:26.664
+while shards that are too large
+may lead to performance
+
+00:06:26.664 --> 00:06:29.920
+bottlenecks due to limited
+parallelization of operations.
+
+00:06:30.840 --> 00:06:34.494
+Also, each Shard in CrateDB is
+stored as an individual Lucene
+
+00:06:34.494 --> 00:06:37.859
+index that consists of multiple
+segments and has a memory
+
+00:06:37.859 --> 00:06:38.440
+footprint.
+
+00:06:39.320 --> 00:06:42.724
+To prevent excessive resource
+consumption, it's recommended
+
+00:06:42.724 --> 00:06:46.242
+that each node in your cluster
+should not host more than 1000
+
+00:06:46.242 --> 00:06:46.640
+shards.
+
+00:06:47.520 --> 00:06:50.677
+This helps to maintain the
+stability and responsiveness of
+
+00:06:50.677 --> 00:06:51.320
+the cluster.
+
+00:06:54.080 --> 00:06:56.837
+Choosing the correct
+partitioning strategy means
+
+00:06:56.837 --> 00:07:00.214
+finding a balance between the
+granularity of partitions and
+
+00:07:00.214 --> 00:07:03.591
+the overall number of partitions
+which impacts the clusters
+
+00:07:03.591 --> 00:07:05.279
+performance and manageability.
+
+00:07:06.000 --> 00:07:10.196
+Some factors to be considered are:
+1. The amount of time
+
+00:07:10.196 --> 00:07:11.080
+series data.
+
+00:07:11.520 --> 00:07:15.112
+Consider the volume of data you
+expect to ingest into your CrateDB
+
+00:07:15.112 --> 00:07:15.720
+cluster.
+
+00:07:16.440 --> 00:07:19.785
+Larger data sets may benefit
+from more granular partitioning
+
+00:07:19.785 --> 00:07:23.240
+to prevent any single partition
+from becoming too large, which
+
+00:07:23.240 --> 00:07:25.160
+could slow down query
+performance.
+
+00:07:25.880 --> 00:07:27.720
+2. The retention period:
+
+00:07:28.280 --> 00:07:30.744
+That means the period of time
+you need to keep the data
+
+00:07:30.744 --> 00:07:32.240
+affects the number of
+partitions.
+
+00:07:32.680 --> 00:07:35.814
+For longer retention periods,
+you may need more partitions to
+
+00:07:35.814 --> 00:07:37.280
+keep the data set manageable.
+
+00:07:38.040 --> 00:07:40.880
+3. The size of your CrateDB
+cluster.
+
+00:07:41.240 --> 00:07:44.648
+That means the number of nodes
+influences your partitioning
+
+00:07:44.648 --> 00:07:45.160
+strategy.
+
+00:07:45.680 --> 00:07:48.595
+More nodes can handle a larger
+number of partitions,
+
+00:07:48.595 --> 00:07:51.235
+distributing the load and
+allowing for parallel
+
+00:07:51.235 --> 00:07:51.840
+processing.
+
+00:07:52.360 --> 00:07:55.972
+However, too many partitions
+across too few nodes can lead to
+
+00:07:55.972 --> 00:07:57.080
+excessive overhead.
+
+00:07:58.120 --> 00:08:01.560
+Let's consider an example with a
+three node CrateDB cluster.
+
+00:08:02.080 --> 00:08:06.332
+If you estimate to collect 700
+megabytes of data each day, this
+
+00:08:06.332 --> 00:08:10.585
+translates to almost 5 gigabytes
+of data per week, 21 gigabytes
+
+00:08:10.585 --> 00:08:14.240
+of data per month, and 253
+gigabytes of data per year.
+
+00:08:15.080 --> 00:08:17.720
+Given these parameters and one
+year retention.
+
+00:08:18.040 --> 00:08:20.320
+You could choose to partition
+your data yearly.
+
+00:08:20.960 --> 00:08:23.886
+For more than one terabyte of
+data, one should consider
+
+00:08:23.886 --> 00:08:24.880
+monthly partitions.
+
+00:08:25.640 --> 00:08:29.786
+The ideal partitioning strategy
+for time series data in CrateDB
+
+00:08:29.786 --> 00:08:30.680
+is not static.
+
+00:08:31.080 --> 00:08:33.940
+It should evolve as your data
+volume grows and your
+
+00:08:33.940 --> 00:08:35.040
+requirements change.
+
+00:08:35.560 --> 00:08:38.466
+The potential deletion or
+archiving of data also
+
+00:08:38.466 --> 00:08:40.720
+influences the partitioning
+strategy.
+
+00:08:41.120 --> 00:08:44.876
+For example, if you want to
+delete large chunks of data, it
+
+00:08:44.876 --> 00:08:48.946
+is beneficial to partition data
+accordingly and drop for example
+
+00:08:48.946 --> 00:08:52.639
+monthly partitions instead of
+executing delete statements.
+
+00:08:54.560 --> 00:08:57.841
+When configuring sharding for
+time series data, it is
+
+00:08:57.841 --> 00:09:01.426
+important to consider several
+factors such as the expected
+
+00:09:01.426 --> 00:09:04.464
+amount of data, number of
+partitions, and cluster
+
+00:09:04.464 --> 00:09:08.293
+configuration including number
+of nodes and the number of CPUs
+
+00:09:08.293 --> 00:09:08.840
+per node.
+
+00:09:10.280 --> 00:09:13.822
+A good rule of thumb is to have
+as many shards as there are CPUs
+
+00:09:13.822 --> 00:09:14.640
+in the cluster.
+
+00:09:15.440 --> 00:09:18.996
+This increases the chance to get
+a maximum of distribution and
+
+00:09:18.996 --> 00:09:20.520
+parallelization of queries.
+
+00:09:21.880 --> 00:09:25.766
+In our example, let's consider a
+three node cluster where each
+
+00:09:25.766 --> 00:09:27.000
+node has three CPUs.
+
+00:09:27.880 --> 00:09:31.789
+The total amount of data over a
+course of the year is predicted
+
+00:09:31.789 --> 00:09:35.149
+to be around 253 gigabytes, and
+we decided to have one
+
+00:09:35.149 --> 00:09:35.760
+partition.
+
+00:09:36.600 --> 00:09:40.561
+In this situation, we can choose
+to have nine shards, resulting
+
+00:09:40.561 --> 00:09:44.584
+in three shards per node, where
+each shard contains 28 gigabytes
+
+00:09:44.584 --> 00:09:45.080
+of data.
+
+00:09:46.520 --> 00:09:49.572
+It is worth mentioning that it
+is important to monitor the
+
+00:09:49.572 --> 00:09:52.883
+performance of your cluster as
+data grows and adjust the number
+
+00:09:52.883 --> 00:09:56.040
+of shards as needed to ensure
+optimal performance over time.
+
+00:09:58.160 --> 00:10:01.777
+CrateDB also supports high
+availability, which is crucial
+
+00:10:01.777 --> 00:10:05.333
+for maintaining uninterrupted
+service and preventing data loss.
+
+00:10:07.160 --> 00:10:10.989
+In CrateDB, replication is
+configurable on a per table
+
+00:10:10.989 --> 00:10:11.400
+basis.
+
+00:10:12.280 --> 00:10:15.546
+This gives you the flexibility
+to set the level of replication
+
+00:10:15.546 --> 00:10:17.880
+that best suits your data size
+and workload.
+
+00:10:19.280 --> 00:10:22.680
+In our example, one replica is
+created per Shard.
+
+00:10:23.520 --> 00:10:26.781
+This ensures that a copy of your
+data is always available,
+
+00:10:26.781 --> 00:10:30.099
+enhancing the reliability of
+your database and safeguarding
+
+00:10:30.099 --> 00:10:32.200
+your data against potential
+failures.
