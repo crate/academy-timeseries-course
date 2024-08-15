@@ -1,4 +1,4 @@
-# CrateDB Fundamentals Course
+# CrateDB Advanced Time Series Course
 
 This GitHub repository contains files used to build the [CrateDB Advanced Time Series Course](https://learn.cratedb.com/course-overview) at the CrateDB Academy.
 
