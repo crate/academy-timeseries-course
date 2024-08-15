@@ -1,0 +1,74 @@
+<h3>Video Transcript</h3>
+<p><span data-contrast="none">Let's dive into how CrateDB handles time series. We will show and explain how CrateDB helps to query data in milliseconds, leverage the simplicity of SQL, combine multiple data types, handle high ingest rates, and store years of historical data.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<p><span data-contrast="none">Weather data will be frequently used in our examples as it is easy to comprehend and available from public sources. As necessary, we will incorporate other data sets to best exhibit the extensive capabilities of CrateDB in managing and analyzing time series data. For most of the examples, we use rather small data sets for demonstration purposes. In later sessions, we will also cover how to work with larger than memory data sets.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<p><span data-contrast="none">In this video, we will create a data table and populate it with weather readings from locations across the globe. Each record includes the exact time of the recording, the location of the weather station, the temperature in degrees Celsius, the relative humidity, and the wind speed in kilometres per hour. We will then showcase the power of CrateDB's querying capabilities, from basic data extraction to more complex, real-time aggregations. This will highlight the versatility and usability of CrateDB in managing, analyzing, and extracting insights from time series data.</span><span>&nbsp;<br></span></p>
+<p><span data-contrast="none">First, let’s create the table. To store the weather data, create a table with columns tailored to the dataset using the <code>CREATE TABLE</code> command. Although we are using only a few variables here, CrateDB can easily accommodate hundreds of columns in a single table.</span></p>
+<div>
+<div><code><span>CREATE</span><span> </span><span>TABLE</span><span> "</span><span>weather_data</span><span>" (</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp; "timestamp"</span><span> </span><span>TIMESTAMP</span><span>,</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp; "location"</span><span> </span><span>VARCHAR</span><span>,</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp; "temperature"</span><span> DOUBLE,</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp; "humidity"</span><span> DOUBLE,</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp; "wind_speed"</span><span> DOUBLE </span><span>CHECK</span><span> (wind_speed </span><span>&gt;=</span><span> </span><span>0</span><span>)</span></code></div>
+<div><code><span>);</span></code><span></span></div>
+</div>
+<p><span></span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559685&quot;:720,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<p><span data-contrast="none">With the table ready, you are now set to insert the dataset. As the data is available in a publicly readable location, you can easily insert it using the <code>COPY FROM</code> SQL statement.</span><span><br></span></p>
+<div>
+<div><code><span>COPY</span><span> weather_data</span></code></div>
+<div><code><span>FROM</span><span> </span><span>'https://github.com/crate/cratedb-datasets/raw/main/cloud-tutorials/data_weather.csv.gz'</span></code></div>
+<div><code><span>WITH</span><span> (format</span><span>=</span><span>'csv'</span><span>, </span><span>compression</span><span>=</span><span>'gzip'</span><span>, empty_string_as_null</span><span>=</span><span>true);</span></code></div>
+<div><span>&nbsp;</span></div>
+</div>
+<p><span data-contrast="none">As you can see, the data set only contains seventy thousand records for educational purposes. Real-world data sets are usually much larger and we will demonstrate those in later sessions. Now that the data is successfully imported, let us start to explore it. We start with a basic select statement on all columns and limit the output to display the first 10 records only.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<div>
+<div><code><span>SELECT</span><span> </span><span>*</span></code></div>
+<div><code><span>FROM</span><span> weather_data</span></code></div>
+<div><code><span>LIMIT</span><span> </span><span>10</span><span>;</span></code></div>
+<div><span>&nbsp;</span></div>
+</div>
+<p><span></span><span data-contrast="none">You see the first values with all previously created measurements.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<p><span data-contrast="none">CrateDB is built for fast aggregations using columnar storage, to speed up aggregations across large datasets and long periods of time. For example, we want to calculate the average temperature for each location by using the average aggregation function.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<div>
+<div><code><span>SELECT</span><span> </span><span>location</span><span>, </span><span>AVG</span><span>(temperature) </span><span>AS</span><span> avg_temp</span></code></div>
+<div><code><span>FROM</span><span> weather_data</span></code></div>
+<div><code><span>GROUP BY</span><span> </span><span>location</span><span>;</span></code></div>
+<div><span>&nbsp;</span></div>
+<div><span data-contrast="none">Computing basic averages is not special, but what if you need to answer more detailed questions? For example, if you want to know the highest temperature for each place and when it occurred.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></div>
+<div><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></div>
+</div>
+<p><span data-contrast="none">Simple groupings might not be enough and CrateDB has enhanced tools for time series data. You can use the <code>max_by</code> function, which gives you a value, like the time, when another value, like the temperature, is at its highest. </span><span>&nbsp;</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<div>
+<div><code><span>SELECT</span><span> </span><span>location</span><span>,</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp;max</span><span>(temperature) </span><span>AS</span><span> highest_temp,</span></code></div>
+<div><code><span>&nbsp; &nbsp; max_by(</span><span>timestamp</span><span>, temperature) </span><span>AS</span><span> time_of_highest_temp</span></code></div>
+<div><code><span>FROM</span><span> weather_data</span></code></div>
+<div><code><span>GROUP BY</span><span> </span><span>location</span><span>;</span></code></div>
+<div><span>&nbsp;</span></div>
+</div>
+<p><span></span><span data-contrast="none">Let’s look at the example query. We now see when the peak in temperature occurred for every location together with the respective maximum temperature.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<p><span data-contrast="none">You have probably observed by now, that there are gaps in the dataset for certain metrics. Such occurrences are common, perhaps due to a sensor malfunction or disconnection. To address this, the missing values need to be filled in. While there are many ways how to deal with missing values, we want to interpolate based on the previous and the following non-empty value. You can use another statement of CrateDB’s SQL, window functions, paired with the ignore nulls feature. Within a Common Table Expression, we utilize window functions to spot the next and prior non-null temperature recordings, and then compute the arithmetic mean to bridge the gap.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<div>
+<div><code><span>WITH</span><span> OrderedData </span><span>AS</span><span> (</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp; SELECT</span><span> </span><span>timestamp</span><span>,</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp; &nbsp; &nbsp; location</span><span>,</span></code></div>
+<div><code><span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;temperature,</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp; &nbsp; &nbsp; LAG</span><span>(temperature, </span><span>1</span><span>) </span><span>IGNORE</span><span> </span><span>NULLS</span><span> </span><span>OVER</span><span> (</span><span>ORDER BY</span><span> </span><span>timestamp</span><span>) </span><span>AS</span><span> prev_temp,</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp; &nbsp; &nbsp; LEAD</span><span>(temperature, </span><span>1</span><span>) </span><span>IGNORE</span><span> </span><span>NULLS</span><span> </span><span>OVER</span><span> (</span><span>ORDER BY</span><span> </span><span>timestamp</span><span>) </span><span>AS</span><span> next_temp</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp; FROM</span><span> weather_data</span></code></div>
+<div><code><span>)</span></code></div>
+<br>
+<div><code><span>SELECT</span><span> </span><span>timestamp</span><span>,</span></code></div>
+<div><code><span>&nbsp;</span><span>&nbsp; &nbsp;location</span><span>,</span></code></div>
+<div><code><span>&nbsp; &nbsp; temperature,</span></code></div>
+<div><code><span>&nbsp; &nbsp; (prev_temp </span><span>+</span><span> next_temp) </span><span>/</span><span> </span><span>2</span><span> </span><span>AS</span><span> interpolated_temperature</span></code></div>
+<div><code><span>FROM</span><span> OrderedData</span></code></div>
+<div><code><span>ORDER BY</span><span> </span><span>location</span><span>, </span><span>timestamp</span></code></div>
+<div><code><span>LIMIT</span><span> </span><span>50</span><span>;</span></code></div>
+<div><span>&nbsp;</span></div>
+</div>
+<p><span data-contrast="none"></span><span data-contrast="none">This query retrieves the missing temperature values and interpolates them by averaging the previous and next available temperature readings.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<p><span data-contrast="none">Let us summarize how CrateDB differentiates for time series data.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<p><span data-contrast="none">It is a SQL database designed for large amounts of data. It offers built-in time-series functionality, including window functions and aggregation functions, which simplify querying and analysis. Functions such as lead, lag, and date bin, as well as joins, allow for advanced data handling and will be discussed in detail in the following sessions.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<p><span data-contrast="none">Beyond time series data, CrateDB supports various data types, including structured, unstructured, JSON, geospatial, BLOB, and vector data. Its columnar storage format is efficient for time series data, enabling complex ad-hoc aggregations within milliseconds across millions and billions of records. The robust time-based partitioning and sharding enables high cardinality without the need for data pre-aggregation or down-sampling.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
+<p><span data-contrast="none">CrateDB's distributed architecture enables high availability and horizontal scaling across multiple nodes, ideal for handling large volumes of data from diverse sources. It also supports data tiering, allowing for cost-efficient long-term data storage. Integration with popular data visualization tools and compatibility with Java and Python ecosystems facilitate efficient data analysis and visualization. As an open-source solution, CrateDB offers cost-effective licensing and an active community for support.</span><span data-ccp-props="{&quot;134233117&quot;:false,&quot;134233118&quot;:false,&quot;201341983&quot;:0,&quot;335559738&quot;:0,&quot;335559739&quot;:0,&quot;335559740&quot;:276}">&nbsp;</span></p>
