@@ -18,7 +18,7 @@
 <div><code><span>) </span><span>CLUSTERED</span><span> </span><span>INTO</span><span> </span><span>1</span><span> SHARDS;</span></code></div>
 <br>
 <div><code><span>COPY</span><span> weather_data</span></code></div>
-<div><code><span>FROM</span><span> </span><span>'https://github.com/crate/cratedb-datasets/raw/main/cloud-tutorials/data_weather.csv.gz'</span></code></div>
+<div><code><span>FROM</span><span> </span><span>'https://cdn.crate.io/downloads/datasets/cratedb-datasets/cloud-tutorials/data_weather.csv.gz'</span></code></div>
 <div><code><span>WITH</span><span> (format</span><span>=</span><span>'csv'</span><span>, </span><span>compression</span><span>=</span><span>'gzip'</span><span>, empty_string_as_null</span><span>=</span><span>true);</span></code></div>
 <div><span>&nbsp;</span></div>
 </div>
@@ -35,7 +35,7 @@
 <div><code><span>PARTITIONED </span><span>BY</span><span> (</span><span>"ts_month"</span><span>);</span></code></div>
 <br>
 <div><code><span>COPY</span><span> weather_data_partitioned</span></code></div>
-<div><code><span>FROM</span><span> </span><span>'https://github.com/crate/cratedb-datasets/raw/main/cloud-tutorials/data_weather.csv.gz'</span></code></div>
+<div><code><span>FROM</span><span> </span><span>'https://cdn.crate.io/downloads/datasets/cratedb-datasets/cloud-tutorials/data_weather.csv.gz'</span></code></div>
 <div><code><span>WITH</span><span> (format</span><span>=</span><span>'csv'</span><span>, </span><span>compression</span><span>=</span><span>'gzip'</span><span>, empty_string_as_null</span><span>=</span><span>true);</span></code></div>
 <div><span>&nbsp;</span></div>
 </div>
